@@ -462,9 +462,9 @@ namespace Pivot {
 			ImGui::SeparatorText("Metadata");
 			ImGui::BulletText("Shader name: \"%s\";", m_ShaderNames[curObj->GetShader()].c_str());
 			if (curObj->IsAnimated()) {
-				ImGui::BulletText("Animation: unavailable;");
-			} else {
 				ImGui::BulletText("Animation: %s topology;", curObj->IsTopoFixed() ? "invariant" : "variant");
+			} else {
+				ImGui::BulletText("Animation: unavailable;");
 			}
 			if (curObj->IsIndexed()) {
 				ImGui::BulletText("Statistics: %u vertices, %u indices.", curObj->GetVertexCount(m_CurrentFrame), curObj->GetIndexCount(m_CurrentFrame));
