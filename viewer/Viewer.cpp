@@ -29,6 +29,13 @@ namespace Pivot {
 			m_ShaderNames[shader.get()] = "default";
 			m_ShaderPool["default_3d"] = std::move(shader);
 		}
+		{ // Heatmap 2D shader
+			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.vert");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
+			m_ShaderNames[shader.get()] = "heatmap";
+			m_ShaderPool["heatmap_2d"] = std::move(shader);
+		}
 
 		m_PassConstantsBuffer = Renderer::CreateUniformBuffer(0);
 		for (auto &shader : m_ShaderPool) {

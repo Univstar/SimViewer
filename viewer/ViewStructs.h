@@ -10,6 +10,7 @@ namespace Pivot {
 			Position = 1 << 0,
 			Normal   = 1 << 1,
 			TexCoord = 1 << 2,
+			Heat     = 1 << 3,
 		};
 	};
 

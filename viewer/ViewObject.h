@@ -13,6 +13,7 @@ namespace Pivot {
 			std::vector<std::byte> Positions;
 			std::vector<std::byte> Normals;
 			std::vector<std::byte> TexCoords;
+			std::vector<std::byte> Heats;
 
 			std::vector<std::uint32_t> Indices;
 		};

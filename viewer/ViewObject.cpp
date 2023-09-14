@@ -83,6 +83,9 @@ namespace Pivot {
 
 		m_AttribFlags = AttribFlagBits::Position;
 		if (dimension == 3) m_AttribFlags |= AttribFlagBits::Normal;
+		if (shaderName == "heatmap_2d" || shaderName == "heatmap_3d") {
+			m_AttribFlags |= AttribFlagBits::Heat;
+		}
 
 		VertexLayout layout;
 		if (dimension == 2) {
@@ -90,6 +93,8 @@ namespace Pivot {
 				layout = std::move(layout).Add<glm::vec2>("Positions", 0);
 			if (m_AttribFlags & AttribFlagBits::TexCoord)
 				layout = std::move(layout).Add<glm::vec2>("TexCoords", 1);
+			if (m_AttribFlags & AttribFlagBits::Heat)
+				layout = std::move(layout).Add<float>("Heats", 1);
 		} else {
 			if (m_AttribFlags & AttribFlagBits::Position)
 				layout = std::move(layout).Add<glm::vec3>("Positions", 0);
@@ -97,6 +102,8 @@ namespace Pivot {
 				layout = std::move(layout).Add<glm::vec3>("Normals", 1);
 			if (m_AttribFlags & AttribFlagBits::TexCoord)
 				layout = std::move(layout).Add<glm::vec2>("TexCoords", 2);
+			if (m_AttribFlags & AttribFlagBits::Heat)
+				layout = std::move(layout).Add<float>("Heats", 2);
 		}
 
 		if (m_Indexed) {
@@ -129,6 +136,10 @@ namespace Pivot {
 			frameData.Normals.resize(vtxCount * m_VecSizeBytes);
 			IO::Read(fin, frameData.Normals);
 		}
+		if (m_AttribFlags & AttribFlagBits::Heat) {
+			frameData.Heats.resize(vtxCount * sizeof(float));
+			IO::Read(fin, frameData.Heats);
+		}
 		if ((!m_TopoFixed || initial) && (m_AttribFlags & AttribFlagBits::TexCoord)) {
 			frameData.TexCoords.resize(vtxCount * sizeof(float) * 2);
 			IO::Read(fin, frameData.TexCoords);
@@ -153,6 +164,8 @@ namespace Pivot {
 				m_VertexArray->GetBufferByName("Positions")->Upload(m_FramesData[posFrame].Positions);
 			if (m_AttribFlags & AttribFlagBits::Normal)
 				m_VertexArray->GetBufferByName("Normals")->Upload(m_FramesData[posFrame].Normals);
+			if (m_AttribFlags & AttribFlagBits::Heat)
+				m_VertexArray->GetBufferByName("Heats")->Upload(m_FramesData[posFrame].Heats);
 			if (m_AttribFlags & AttribFlagBits::TexCoord)
 				m_VertexArray->GetBufferByName("TexCoords")->Upload(m_FramesData[topoFrame].TexCoords);
 			if (m_Indexed) {
@@ -165,6 +178,8 @@ namespace Pivot {
 				m_VertexArray->GetBufferByName("Positions")->Upload(m_FramesData[frame].Positions);
 			if (m_AttribFlags & AttribFlagBits::Normal)
 				m_VertexArray->GetBufferByName("Normals")->Upload(m_FramesData[frame].Normals);
+			if (m_AttribFlags & AttribFlagBits::Heat)
+				m_VertexArray->GetBufferByName("Heats")->Upload(m_FramesData[frame].Heats);
 			if (!m_TopoFixed) {
 				if (m_AttribFlags & AttribFlagBits::TexCoord)
 					m_VertexArray->GetBufferByName("TexCoords")->Upload(m_FramesData[frame].TexCoords);
