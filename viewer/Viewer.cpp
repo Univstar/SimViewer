@@ -461,9 +461,11 @@ namespace Pivot {
 			auto &curMat = curObj->GetMaterial();
 			ImGui::Checkbox("Visible", &curMat.Visible);
 			ImGui::SameLine();
-			ImGui::BeginDisabled();
-			ImGui::Text("Ctrl+[ for Prev, Ctrl+] for Next");
-			ImGui::EndDisabled();
+			if (m_ObjectsInfo.CurIdx < 9) {
+				ImGui::BeginDisabled();
+				ImGui::Text("Global shortcut keys: Ctrl+%d", static_cast<int>(m_ObjectsInfo.CurIdx) + 1);
+				ImGui::EndDisabled();
+			}
 
 			ImGui::Spacing();
 			ImGui::SeparatorText("Metadata");
@@ -531,6 +533,12 @@ namespace Pivot {
 		// Camera shortcuts
 		if (ImGui::Shortcut(ImGuiKey_ModCtrl | ImGuiKey_Backspace, 0, ImGuiInputFlags_RouteGlobalLow)) {
 			m_Camera->SetAs(*m_InitialCamera);
+		}
+		// Objects shortcuts
+		for (std::size_t i = 0; i < m_Objects.size() && i < 9; i++) {
+			if (ImGui::Shortcut(ImGuiKey_ModCtrl | ImGuiKey_1 + i, 0, ImGuiInputFlags_RouteGlobalLow)) {
+				m_Objects[i]->GetMaterial().Visible = !m_Objects[i]->GetMaterial().Visible;
+			}
 		}
 	}
 
