@@ -5,6 +5,13 @@
 namespace Pivot {
 	using ShaderPool = std::unordered_map<std::string, std::unique_ptr<Shader>>;
 
+	enum class ViewShader : std::uint16_t {
+		Default2D,
+		Default3D,
+		Heatmap2D,
+		Count,
+	};
+
 	struct AttribFlagBits {
 		enum : std::uint16_t {
 			Position = 1 << 0,
@@ -26,9 +33,14 @@ namespace Pivot {
 
 	struct ViewMaterial {
 		BlendMode Mode      = BlendMode::Opaque;
+		
 		glm::vec4 Albedo    = { 1, 1, 1, 1 };
 		float     Metallic  = 0;
 		float     Roughness = .5f;
+
+		float     HeatMax   = 0;
+		float     HeatScale = 1;
+
 		bool      Visible   = true;
 	};
 

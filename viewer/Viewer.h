@@ -10,9 +10,6 @@
 
 namespace Pivot {
 	class Viewer : public Kernel {
-	private:
-		using ShaderNames = std::unordered_map<Shader const *, std::string>;
-
 	public:
 		Viewer();
 		Viewer(std::filesystem::path const &dirname);
@@ -40,9 +37,6 @@ namespace Pivot {
 		void RegisterGlobalShortcuts();
 
 	private:
-		ShaderPool            m_ShaderPool;
-		ShaderNames           m_ShaderNames;
-
 		std::filesystem::path m_Dirname;
 		YAML::Node            m_Description;
 		std::uint32_t         m_Dimension;

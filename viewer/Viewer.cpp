@@ -1,5 +1,7 @@
 #include "Viewer.h"
 
+#include "ViewShaderPool.h"
+
 #include "Assets.h"
 #include "Core/EntryPoint.h"
 #include "Core/Input.h"
@@ -13,33 +15,11 @@
 
 namespace Pivot {
 	Viewer::Viewer() {
-		// Compile shaders
-		{ // Default 2D shader
-			auto vs = Renderer::CreateShaderModule("assets/shaders/default_2d.vert");
-			auto fs = Renderer::CreateShaderModule("assets/shaders/default_2d.frag");
-			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
-			m_ShaderNames[shader.get()] = "default";
-			m_ShaderPool["default_2d"] = std::move(shader);
-		}
-		{ // Default 3D shader
-			auto vs = Renderer::CreateShaderModule("assets/shaders/default_3d.vert");
-			auto gs = Renderer::CreateShaderModule("assets/shaders/default_3d.geom");
-			auto fs = Renderer::CreateShaderModule("assets/shaders/default_3d.frag");
-			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
-			m_ShaderNames[shader.get()] = "default";
-			m_ShaderPool["default_3d"] = std::move(shader);
-		}
-		{ // Heatmap 2D shader
-			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.vert");
-			auto fs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.frag");
-			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
-			m_ShaderNames[shader.get()] = "heatmap";
-			m_ShaderPool["heatmap_2d"] = std::move(shader);
-		}
+		ViewShaderPool::CompileShaders();
 
 		m_PassConstantsBuffer = Renderer::CreateUniformBuffer(0);
-		for (auto &shader : m_ShaderPool) {
-			shader.second->BindUniformBlock("PassConstants", 0);
+		for (auto &shader : ViewShaderPool::GetShaders()) {
+			shader->BindUniformBlock("PassConstants", 0);
 		}
 
 		Renderer::SetClearColor(m_Appearance.Background);
@@ -67,6 +47,8 @@ namespace Pivot {
 
 	Viewer::~Viewer() {
 		m_Loader.Stop();
+
+		ViewShaderPool::DestroyShaders();
 	}
 
 	void Viewer::Tick(float deltaTime) {
@@ -181,7 +163,7 @@ namespace Pivot {
 			return false;
 		}
 		for (auto const &node : m_Description["Objects"]) {
-			auto object = std::make_unique<ViewObject>(m_Objects.size(), node, m_Dimension, m_ShaderPool);
+			auto object = std::make_unique<ViewObject>(m_Objects.size(), node, m_Dimension);
 			m_ObjectLayers[static_cast<std::size_t>(object->GetMaterial().Mode)].push_back(object.get());
 			m_Objects.push_back(std::move(object));
 		}
@@ -469,7 +451,7 @@ namespace Pivot {
 
 			ImGui::Spacing();
 			ImGui::SeparatorText("Metadata");
-			ImGui::BulletText("Shader name: \"%s\";", m_ShaderNames[curObj->GetShader()].c_str());
+			ImGui::BulletText("Shader name: \"%s\";", ViewShaderPool::GetName(curObj->GetViewShader()).data());
 			if (curObj->IsAnimated()) {
 				ImGui::BulletText("Animation: %s topology;", curObj->IsTopoFixed() ? "invariant" : "variant");
 			} else {
@@ -487,10 +469,21 @@ namespace Pivot {
 			auto blending = static_cast<int>(curMat.Mode);
 			ImGui::Combo("Blending", &blending, "Opaque\0Cutout\0Transparent\0Fade\0");
 			ImGui::EndDisabled();
-			ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
-			if (m_Dimension == 3) {
+			switch (curObj->GetViewShader()) {
+			case ViewShader::Default2D:
+				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
+				break;
+			case ViewShader::Default3D:
+				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
 				ImGui::SliderFloat("Metallic", &curMat.Metallic, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				ImGui::SliderFloat("Roughness", &curMat.Roughness, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				break;
+			case ViewShader::Heatmap2D:
+				ImGui::BeginDisabled();
+				ImGui::InputFloat("Maximum", &curMat.HeatMax, 0.f, 0.f, "%.4g");
+				ImGui::EndDisabled();
+				ImGui::SliderFloat("Scale", &curMat.HeatScale, 1.f, 10.f, "%.2f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				break;
 			}
 		}
 		ImGui::End();

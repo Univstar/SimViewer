@@ -1,5 +1,7 @@
 #include "ViewObject.h"
 
+#include "ViewShaderPool.h"
+
 #include "Graphics/Renderer.h"
 #include "Utils/IO.h"
 
@@ -45,7 +47,7 @@ namespace YAML {
 }
 
 namespace Pivot {
-	ViewObject::ViewObject(std::size_t nodeId, YAML::Node const &node, std::uint32_t dimension, ShaderPool const &shaderPool) {
+	ViewObject::ViewObject(std::size_t nodeId, YAML::Node const &node, std::uint32_t dimension) {
 		m_VecSizeBytes = dimension * sizeof(float);
 		if (node["Name"]) {
 			m_Name = node["Name"].as<std::string>();
@@ -60,10 +62,9 @@ namespace Pivot {
 		std::string shaderName = "default";
 		SetValue(shaderName, node["Shader"]);
 		shaderName += fmt::format("_{}d", dimension);
-		if (auto iter = shaderPool.find(shaderName); iter != shaderPool.end()) {
-			m_Shader = iter->second.get();
-		} else {
-			spdlog::error("Failed to find Shader \"{}\"", shaderName);
+		m_ViewShader = ViewShaderPool::GetViewShader(shaderName);
+		if (m_ViewShader == ViewShader::Count) { // invalid shader name
+			m_ViewShader = dimension == 2 ? ViewShader::Default2D : ViewShader::Default3D;
 		}
 
 		PrimitiveType primitive = PrimitiveType::Triangles;
@@ -139,6 +140,8 @@ namespace Pivot {
 		if (m_AttribFlags & AttribFlagBits::Heat) {
 			frameData.Heats.resize(vtxCount * sizeof(float));
 			IO::Read(fin, frameData.Heats);
+			std::span<float const> heats(reinterpret_cast<float const *>(frameData.Heats.data()), vtxCount);
+			m_Material.HeatMax = std::max(m_Material.HeatMax, *std::max_element(heats.begin(), heats.end()));
 		}
 		if ((!m_TopoFixed || initial) && (m_AttribFlags & AttribFlagBits::TexCoord)) {
 			frameData.TexCoords.resize(vtxCount * sizeof(float) * 2);
@@ -193,20 +196,29 @@ namespace Pivot {
 
 	void ViewObject::Draw() const {
 		if (!m_Material.Visible) return;
+		auto shader = ViewShaderPool::GetShader(m_ViewShader);
 
-		m_Shader->SetUniform("u_Albedo", m_Material.Albedo);
-		if (m_VecSizeBytes != 2 * sizeof(float)) {
-			m_Shader->SetUniform("u_Metallic", m_Material.Metallic);
-			m_Shader->SetUniform("u_Roughness", m_Material.Roughness);
+		switch (m_ViewShader) {
+		case ViewShader::Default2D:
+			shader->SetUniform("u_Albedo", m_Material.Albedo);
+			break;
+		case ViewShader::Default3D:
+			shader->SetUniform("u_Albedo", m_Material.Albedo);
+			shader->SetUniform("u_Metallic", m_Material.Metallic);
+			shader->SetUniform("u_Roughness", m_Material.Roughness);
+			break;
+		case ViewShader::Heatmap2D:
+			shader->SetUniform("u_Scale", m_Material.HeatScale / m_Material.HeatMax);
+			break;
 		}
 		
-		m_Shader->Bind();
+		shader->Bind();
 		if (m_Indexed) {
 			auto indexedVA = reinterpret_cast<IndexedVertexArray *>(m_VertexArray.get());
 			Renderer::Draw(indexedVA);
 		} else {
 			Renderer::Draw(m_VertexArray.get());
 		}
-		m_Shader->Unbind();
+		shader->Unbind();
 	}
 }

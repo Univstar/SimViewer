@@ -5,7 +5,7 @@ layout(location = 1) in  float v_Heat;
 
 layout(location = 0) out vec4 f_Color;
 
-uniform vec4 u_Albedo;
+uniform float u_Scale;
 
 float GetJetBase(float val) {
 	if (val <= .125) {
@@ -26,5 +26,7 @@ vec3 GetJet(float heat) {
 }
 
 void main() {
-	f_Color = vec4(GetJet(v_Heat), 1.) * u_Albedo;
+    float heat = v_Heat > 0.f ? v_Heat * u_Scale : v_Heat;
+    heat = clamp(heat, 0.f, 1.f);
+	f_Color = vec4(GetJet(heat), 1.);
 }

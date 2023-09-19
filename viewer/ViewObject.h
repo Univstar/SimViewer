@@ -19,7 +19,7 @@ namespace Pivot {
 		};
 	
 	public:
-		ViewObject(std::size_t nodeId, YAML::Node const &node, std::uint32_t dimension, ShaderPool const &shaderPool);
+		ViewObject(std::size_t nodeId, YAML::Node const &node, std::uint32_t dimension);
 		virtual ~ViewObject() = default;
 
 		void ReserveFrames(std::uint32_t frameCount);
@@ -29,7 +29,7 @@ namespace Pivot {
 
 		std::string_view  GetName()        const { return m_Name; }
 		std::string_view  GetDisplayName() const { return m_DisplayName; }
-		Shader           *GetShader()      const { return m_Shader; }
+		ViewShader        GetViewShader()  const { return m_ViewShader; }
 		bool              IsIndexed()      const { return m_Indexed; }
 		bool              IsAnimated()     const { return m_Animated; }
 		bool              IsTopoFixed()    const { return m_TopoFixed; }
@@ -43,7 +43,7 @@ namespace Pivot {
 		std::size_t   m_VecSizeBytes;
 		std::string   m_Name;
 		std::string   m_DisplayName;
-		Shader       *m_Shader;
+		ViewShader    m_ViewShader;
 
 		bool          m_Indexed     = false;
 		bool          m_Animated    = false;
