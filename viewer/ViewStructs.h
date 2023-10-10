@@ -9,6 +9,7 @@ namespace Pivot {
 		Default2D,
 		Default3D,
 		Heatmap2D,
+		Points3D,
 		Count,
 	};
 

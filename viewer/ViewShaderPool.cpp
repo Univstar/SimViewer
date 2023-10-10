@@ -32,6 +32,12 @@ namespace Pivot {
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap2D)] = std::move(shader);
 		}
+		{ // Points 3D shader
+			auto vs = Renderer::CreateShaderModule("assets/shaders/points_3d.vert");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/points_3d.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Points3D)] = std::move(shader);
+		}
 	}
 
 	void ViewShaderPool::DestroyShaders() {

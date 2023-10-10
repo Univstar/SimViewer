@@ -203,6 +203,7 @@ namespace Pivot {
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			break;
 		case ViewShader::Default3D:
+		case ViewShader::Points3D:
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
