@@ -58,17 +58,20 @@ namespace Pivot {
 
 		constexpr auto SetValue = [] <typename T>(T &val, YAML::Node const & node) { if (node) val = node.as<T>(); };
 
+		PrimitiveType primitive = PrimitiveType::Triangles;
+		SetValue(primitive, node["Primitive"]);
+
+		static constexpr auto c_PrimitiveNames = std::to_array<std::string_view>({
+			"points", "lines", "lines", "lines", "triangles", "triangles", "triangles", "", "", "", "lines", "lines", "triangles", "triangles",
+		});
+
 		// Determine shader
 		std::string shaderName = "default";
 		SetValue(shaderName, node["Shader"]);
-		shaderName += fmt::format("_{}d", dimension);
-		m_ViewShader = ViewShaderPool::GetViewShader(shaderName);
+		m_ViewShader = ViewShaderPool::GetViewShader(fmt::format("{}_{}d_{}", shaderName, dimension, c_PrimitiveNames[static_cast<std::size_t>(primitive)]));
 		if (m_ViewShader == ViewShader::Count) { // invalid shader name
-			m_ViewShader = dimension == 2 ? ViewShader::Default2D : ViewShader::Default3D;
+			m_ViewShader = ViewShaderPool::GetViewShader(fmt::format("default_{}d_{}", dimension, c_PrimitiveNames[static_cast<std::size_t>(primitive)]));
 		}
-
-		PrimitiveType primitive = PrimitiveType::Triangles;
-		SetValue(primitive, node["Primitive"]);
 
 		SetValue(m_Indexed,   node["Indexed"]);
 		SetValue(m_Animated,  node["Animated"]);
@@ -202,8 +205,8 @@ namespace Pivot {
 		case ViewShader::Default2D:
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			break;
-		case ViewShader::Default3D:
-		case ViewShader::Points3D:
+		case ViewShader::Default3D_Triangles:
+		case ViewShader::Default3d_Points:
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
 			shader->SetUniform("u_Roughness", m_Material.Roughness);

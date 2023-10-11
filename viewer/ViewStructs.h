@@ -7,9 +7,9 @@ namespace Pivot {
 
 	enum class ViewShader : std::uint16_t {
 		Default2D,
-		Default3D,
+		Default3D_Triangles,
+		Default3d_Points,
 		Heatmap2D,
-		Points3D,
 		Count,
 	};
 

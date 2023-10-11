@@ -19,24 +19,24 @@ namespace Pivot {
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Default2D)] = std::move(shader);
 		}
-		{ // Default 3D shader
-			auto vs = Renderer::CreateShaderModule("assets/shaders/default_3d.vert");
-			auto gs = Renderer::CreateShaderModule("assets/shaders/default_3d.geom");
-			auto fs = Renderer::CreateShaderModule("assets/shaders/default_3d.frag");
+		{ // Default 3D shader of triangles
+			auto vs = Renderer::CreateShaderModule("assets/shaders/default_3d_triangles.vert");
+			auto gs = Renderer::CreateShaderModule("assets/shaders/default_3d_triangles.geom");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/default_3d_triangles.frag");
 			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
-			s_Shaders[static_cast<std::size_t>(ViewShader::Default3D)] = std::move(shader);
+			s_Shaders[static_cast<std::size_t>(ViewShader::Default3D_Triangles)] = std::move(shader);
+		}
+		{ // Points 3D shader of points
+			auto vs = Renderer::CreateShaderModule("assets/shaders/default_3d_points.vert");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/default_3d_points.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Default3d_Points)] = std::move(shader);
 		}
 		{ // Heatmap 2D shader
 			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.vert");
 			auto fs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.frag");
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap2D)] = std::move(shader);
-		}
-		{ // Points 3D shader
-			auto vs = Renderer::CreateShaderModule("assets/shaders/points_3d.vert");
-			auto fs = Renderer::CreateShaderModule("assets/shaders/points_3d.frag");
-			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
-			s_Shaders[static_cast<std::size_t>(ViewShader::Points3D)] = std::move(shader);
 		}
 	}
 
