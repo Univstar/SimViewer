@@ -38,6 +38,13 @@ namespace Pivot {
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap2D)] = std::move(shader);
 		}
+		{ // Heatmap 3D shader of triangles
+			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_3d_triangles.vert");
+			auto gs = Renderer::CreateShaderModule("assets/shaders/heatmap_3d_triangles.geom");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/heatmap_3d_triangles.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap3D_Triangles)] = std::move(shader);
+		}
 	}
 
 	void ViewShaderPool::DestroyShaders() {

@@ -87,7 +87,7 @@ namespace Pivot {
 
 		m_AttribFlags = AttribFlagBits::Position;
 		if (dimension == 3) m_AttribFlags |= AttribFlagBits::Normal;
-		if (shaderName == "heatmap_2d" || shaderName == "heatmap_3d") {
+		if (shaderName == "heatmap") {
 			m_AttribFlags |= AttribFlagBits::Heat;
 		}
 
@@ -212,6 +212,11 @@ namespace Pivot {
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
 			break;
 		case ViewShader::Heatmap2D:
+			shader->SetUniform("u_Scale", m_Material.HeatScale / m_Material.HeatMax);
+			break;
+		case ViewShader::Heatmap3D_Triangles:
+			shader->SetUniform("u_Metallic", m_Material.Metallic);
+			shader->SetUniform("u_Roughness", m_Material.Roughness);
 			shader->SetUniform("u_Scale", m_Material.HeatScale / m_Material.HeatMax);
 			break;
 		}

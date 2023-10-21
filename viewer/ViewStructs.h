@@ -10,6 +10,7 @@ namespace Pivot {
 		Default3D_Triangles,
 		Default3d_Points,
 		Heatmap2D,
+		Heatmap3D_Triangles,
 		Count,
 	};
 

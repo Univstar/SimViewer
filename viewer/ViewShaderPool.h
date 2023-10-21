@@ -21,6 +21,7 @@ namespace Pivot {
 			"default (triangles)",
 			"default (points)",
 			"heatmap",
+			"heatmap (triangles)",
 		});
 
 		static inline std::array<std::unique_ptr<Shader>, static_cast<std::size_t>(ViewShader::Count)> s_Shaders;
@@ -35,6 +36,7 @@ namespace Pivot {
 			{ "heatmap_2d_triangles", ViewShader::Heatmap2D },
 			{ "heatmap_2d_lines"    , ViewShader::Heatmap2D },
 			{ "heatmap_2d_points"   , ViewShader::Heatmap2D },
+			{ "heatmap_3d_triangles", ViewShader::Heatmap3D_Triangles },
 		};
 	};
 }

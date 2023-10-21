@@ -485,6 +485,14 @@ namespace Pivot {
 				ImGui::EndDisabled();
 				ImGui::SliderFloat("Scale", &curMat.HeatScale, 1.f, 10.f, "%.2f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				break;
+			case ViewShader::Heatmap3D_Triangles:
+				ImGui::SliderFloat("Metallic", &curMat.Metallic, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				ImGui::SliderFloat("Roughness", &curMat.Roughness, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				ImGui::BeginDisabled();
+				ImGui::InputFloat("Maximum", &curMat.HeatMax, 0.f, 0.f, "%.4g");
+				ImGui::EndDisabled();
+				ImGui::SliderFloat("Scale", &curMat.HeatScale, 1.f, 10.f, "%.2f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				break;
 			}
 		}
 		ImGui::End();

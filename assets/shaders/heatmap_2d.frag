@@ -26,7 +26,7 @@ vec3 GetJet(float heat) {
 }
 
 void main() {
-    float heat = v_Heat > 0.f ? v_Heat * u_Scale : v_Heat;
-    heat = clamp(heat, 0.f, 1.f);
+    float heat = v_Heat > 0. ? v_Heat * u_Scale : 0.;
+    heat = clamp(heat, 0., 1.);
 	f_Color = vec4(GetJet(heat), 1.);
 }
