@@ -40,8 +40,8 @@ namespace Pivot {
 		float     Metallic  = 0;
 		float     Roughness = .5f;
 
-		float     HeatMax   = 0;
-		float     HeatScale = 1;
+		float     HeatMin   = +std::numeric_limits<float>::infinity();
+		float     HeatMax   = -std::numeric_limits<float>::infinity();
 
 		bool      Visible   = true;
 	};

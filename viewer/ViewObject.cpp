@@ -144,7 +144,9 @@ namespace Pivot {
 			frameData.Heats.resize(vtxCount * sizeof(float));
 			IO::Read(fin, frameData.Heats);
 			std::span<float const> heats(reinterpret_cast<float const *>(frameData.Heats.data()), vtxCount);
-			m_Material.HeatMax = std::max(m_Material.HeatMax, *std::max_element(heats.begin(), heats.end()));
+			auto const [itMin, itMax] = std::minmax_element(heats.begin(), heats.end());
+			m_Material.HeatMin = std::min(m_Material.HeatMin, *itMin);
+			m_Material.HeatMax = std::max(m_Material.HeatMax, *itMax);
 		}
 		if ((!m_TopoFixed || initial) && (m_AttribFlags & AttribFlagBits::TexCoord)) {
 			frameData.TexCoords.resize(vtxCount * sizeof(float) * 2);
@@ -212,12 +214,14 @@ namespace Pivot {
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
 			break;
 		case ViewShader::Heatmap2D:
-			shader->SetUniform("u_Scale", m_Material.HeatScale / m_Material.HeatMax);
+			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
+			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
 			break;
 		case ViewShader::Heatmap3D_Triangles:
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
-			shader->SetUniform("u_Scale", m_Material.HeatScale / m_Material.HeatMax);
+			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
+			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
 			break;
 		}
 		

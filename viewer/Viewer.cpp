@@ -470,29 +470,37 @@ namespace Pivot {
 			ImGui::Combo("Blending", &blending, "Opaque\0Cutout\0Transparent\0Fade\0");
 			ImGui::EndDisabled();
 			switch (curObj->GetViewShader()) {
-			case ViewShader::Default2D:
+			case ViewShader::Default2D: {
 				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
 				break;
+			}
 			case ViewShader::Default3D_Triangles:
-			case ViewShader::Default3d_Points:
+			case ViewShader::Default3d_Points: {
 				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
 				ImGui::SliderFloat("Metallic", &curMat.Metallic, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				ImGui::SliderFloat("Roughness", &curMat.Roughness, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				break;
-			case ViewShader::Heatmap2D:
+			}
+			case ViewShader::Heatmap2D: {
+				ImGui::Spacing();
+				ImGui::SeparatorText("Heat");
 				ImGui::BeginDisabled();
-				ImGui::InputFloat("Maximum", &curMat.HeatMax, 0.f, 0.f, "%.4g");
+				std::array heatRange = { curMat.HeatMin, curMat.HeatMax };
+				ImGui::InputFloat2("Range", heatRange.data(), "%g");
 				ImGui::EndDisabled();
-				ImGui::SliderFloat("Scale", &curMat.HeatScale, 1.f, 10.f, "%.2f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				break;
-			case ViewShader::Heatmap3D_Triangles:
+			}
+			case ViewShader::Heatmap3D_Triangles: {
 				ImGui::SliderFloat("Metallic", &curMat.Metallic, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				ImGui::SliderFloat("Roughness", &curMat.Roughness, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				ImGui::Spacing();
+				ImGui::SeparatorText("Heat");
 				ImGui::BeginDisabled();
-				ImGui::InputFloat("Maximum", &curMat.HeatMax, 0.f, 0.f, "%.4g");
+				std::array heatRange = { curMat.HeatMin, curMat.HeatMax };
+				ImGui::InputFloat2("Range", heatRange.data(), "%g");
 				ImGui::EndDisabled();
-				ImGui::SliderFloat("Scale", &curMat.HeatScale, 1.f, 10.f, "%.2f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				break;
+			}
 			}
 		}
 		ImGui::End();

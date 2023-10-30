@@ -18,7 +18,8 @@ layout(std140) uniform PassConstants {
 
 uniform float u_Metallic;
 uniform float u_Roughness;
-uniform float u_Scale;
+uniform float u_HeatBias;
+uniform float u_HeatScale;
 
 const float PI = 3.14159265359;
 
@@ -99,8 +100,8 @@ void main() {
 	vec3  normal    = normalize(g_Normal);
 	vec3  viewDir   = normalize(u_CameraPosition - g_Position);
 	if (dot(normal, viewDir) < 0) normal = -normal;
-	float heat = g_Heat > 0. ? g_Heat * u_Scale : 0.;
-	heat = clamp(heat, 0., 1.);
+    float heat = u_HeatScale > 0 ? (g_Heat + u_HeatBias) * u_HeatScale : .5;
+	// heat = clamp(heat, 0., 1.);
 	vec3  albedo    = GetJet(heat);
 	float metallic  = u_Metallic;
 	float roughness = u_Roughness;
