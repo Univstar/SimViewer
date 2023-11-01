@@ -37,7 +37,9 @@ namespace Pivot {
 		auto              GetAttribFlags() const { return m_AttribFlags; }
 		
 		auto GetVertexCount(std::uint32_t frame) const { return static_cast<std::uint32_t>(m_FramesData[m_Animated ? frame : 0].Positions.size() / m_VecSizeBytes); }
-		auto GetIndexCount(std::uint32_t frame)  const { return static_cast<std::uint32_t>(m_FramesData[m_Animated ? frame : 0].Indices.size()); }
+		auto GetIndexCount (std::uint32_t frame) const { return static_cast<std::uint32_t>(m_FramesData[m_Animated && !m_TopoFixed ? frame : 0].Indices.size()); }
+
+		void Export(std::uint32_t frame, std::filesystem::path const &dirname) const;
 
 	private:
 		std::size_t   m_VecSizeBytes;

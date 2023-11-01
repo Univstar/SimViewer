@@ -5,6 +5,8 @@
 #include "Graphics/Renderer.h"
 #include "Utils/IO.h"
 
+#include <tinyply.h>
+
 namespace YAML {
 	template <>
 	struct convert<Pivot::PrimitiveType> {
@@ -233,5 +235,27 @@ namespace Pivot {
 			Renderer::Draw(m_VertexArray.get());
 		}
 		shader->Unbind();
+	}
+
+	void ViewObject::Export(std::uint32_t frame, std::filesystem::path const &dirname) const {
+		// TODO: support more types
+		if (m_VertexArray->GetPrimitiveType() != PrimitiveType::Triangles || m_VecSizeBytes != 3 * sizeof(float) || !m_Indexed) {
+			spdlog::warn("Encountered unsupported primitives");
+			return;
+		}
+
+		auto const topoFrame = m_Animated && !m_TopoFixed ? frame : 0;
+		auto const posFrame = m_Animated ? frame : 0;
+
+		tinyply::PlyFile plyFile;
+		plyFile.add_properties_to_element(
+			"vertex", { "x", "y", "z" }, tinyply::Type::FLOAT32, m_FramesData[posFrame].Positions.size() / m_VecSizeBytes,
+			reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(m_FramesData[posFrame].Positions.data())), tinyply::Type::INVALID, 0);
+		plyFile.add_properties_to_element(
+			"face", { "vertex_indices" }, tinyply::Type::UINT32, m_FramesData[topoFrame].Indices.size() / 3,
+			reinterpret_cast<std::uint8_t *>(const_cast<std::uint32_t *>(m_FramesData[topoFrame].Indices.data())), tinyply::Type::UINT8, 3);
+
+		std::ofstream fout(dirname / fmt::format("{}-{}.ply", m_Name, frame), std::ios::binary);
+		plyFile.write(fout, true);
 	}
 }

@@ -191,6 +191,18 @@ namespace Pivot {
 		}
 	}
 
+	void Viewer::ExportModels() {
+		std::filesystem::create_directories(m_ExportModels.Dirname);
+		std::uint32_t const frameBegin = m_ExportModels.AllFramesSelected ? 0 : m_CurrentFrame;
+		std::uint32_t const frameEnd   = m_ExportModels.AllFramesSelected ? m_AvailFrameCount : m_CurrentFrame + 1;
+		for (std::size_t i = 0; i < m_Objects.size(); i++) {
+			if (!m_ExportModels.Exported[i]) continue;
+			for (auto frame = frameBegin; frame < frameEnd; frame++) {
+				m_Objects[i]->Export(frame, m_ExportModels.Dirname);
+			}
+		}
+	}
+
 	void Viewer::RenderSideBars() {
 		// Render main menu bar
 		if (m_MenuBarVisible && ImGui::BeginMainMenuBar()) {
@@ -312,7 +324,10 @@ namespace Pivot {
 				float buttonWidth2 = ImGui::CalcTextSize("Cancel").x + style.FramePadding.x * 2.f;
 				float widthNeeded = buttonWidth1 + style.ItemSpacing.x + buttonWidth2;
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x - widthNeeded);
-				ImGui::Button("OK");
+				if (ImGui::Button("OK")) {
+					ExportModels();
+					ImGui::CloseCurrentPopup();
+				}
 				ImGui::SameLine();
 				if (ImGui::Button("Cancel")) {
 					ImGui::CloseCurrentPopup();

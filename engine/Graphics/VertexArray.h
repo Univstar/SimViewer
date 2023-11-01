@@ -57,7 +57,8 @@ namespace Pivot {
 	public:
 		virtual ~VertexArray();
 
-		VertexBuffer *GetBufferByName(std::string_view name) const;
+		PrimitiveType  GetPrimitiveType() const { return m_PrimitiveType; }
+		VertexBuffer  *GetBufferByName(std::string_view name) const;
 	
 	protected:
 		void Bind() const;

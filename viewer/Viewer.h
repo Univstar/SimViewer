@@ -27,6 +27,7 @@ namespace Pivot {
 	private:
 		bool LoadDirectory(std::filesystem::path const &dirname);
 		bool SaveScreenshot();
+		void ExportModels();
 
 		void RenderSideBars();
 		void RenderPopups();
