@@ -297,6 +297,14 @@ namespace Pivot {
 			}
 			ImGui::EndListBox();
 			ImGui::Spacing();
+			if (ImGui::RadioButton("Current frame", !m_ExportModels.AllFramesSelected)) {
+				m_ExportModels.AllFramesSelected = false;
+			}
+			ImGui::SameLine();
+			if (ImGui::RadioButton("All frames", m_ExportModels.AllFramesSelected)) {
+				m_ExportModels.AllFramesSelected = true;
+			}
+			ImGui::Spacing();
 			ImGui::Separator();
 			{
 				auto const &style = ImGui::GetStyle();
@@ -511,7 +519,7 @@ namespace Pivot {
 		if (ImGui::Shortcut(ImGuiKey_ModCtrl | ImGuiKey_S, 0, ImGuiInputFlags_RouteGlobalLow)) {
 			SaveScreenshot();
 		}
-		if (ImGui::Shortcut(ImGuiKey_ModCtrl | ImGuiKey_M, 0, ImGuiInputFlags_RouteGlobalLow)) {
+		if (!m_Animation.Playing && ImGui::Shortcut(ImGuiKey_ModCtrl | ImGuiKey_M, 0, ImGuiInputFlags_RouteGlobalLow)) {
 			m_ExportModels.Requested = true;
 		}
 		// Visibility shortcuts
@@ -584,7 +592,7 @@ namespace Pivot {
 				.MinHeight = 240,
 			},
 			.GuiStyleOptions = {
-				.FontFilenames = Assets::UbuntuFont,
+				.FontFilenames = Assets::UbuntuFonts,
 			},
 		};
 

@@ -52,6 +52,7 @@ namespace Pivot {
 		std::filesystem::path Dirname;
 		std::string           DirnameStr;
 		std::vector<char>     Exported;
+		bool AllFramesSelected = false;
 	};
 
 	struct ViewAnimation {
