@@ -2,6 +2,10 @@
 
 #include <glm/ext.hpp>
 
+#include <fmt/chrono.h>
+#include <fmt/color.h>
+#include <fmt/core.h>
+
 #include <spdlog/spdlog.h>
 
 // Fix including <Window.h>

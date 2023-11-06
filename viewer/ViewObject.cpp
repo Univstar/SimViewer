@@ -255,7 +255,8 @@ namespace Pivot {
 			"face", { "vertex_indices" }, tinyply::Type::UINT32, m_FramesData[topoFrame].Indices.size() / 3,
 			reinterpret_cast<std::uint8_t *>(const_cast<std::uint32_t *>(m_FramesData[topoFrame].Indices.data())), tinyply::Type::UINT8, 3);
 
-		std::ofstream fout(dirname / fmt::format("{}-{}.ply", m_Name, frame), std::ios::binary);
+		auto const filename = dirname / fmt::format("{}-{}.ply", m_Name, frame);
+		std::ofstream fout(filename, std::ios::binary);
 		plyFile.write(fout, true);
 	}
 }

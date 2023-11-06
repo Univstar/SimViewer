@@ -194,12 +194,15 @@ namespace Pivot {
 	void Viewer::ExportModels() {
 		std::filesystem::create_directories(m_ExportModels.Dirname);
 		std::uint32_t const frameBegin = m_ExportModels.AllFramesSelected ? 0 : m_CurrentFrame;
-		std::uint32_t const frameEnd   = m_ExportModels.AllFramesSelected ? m_AvailFrameCount : m_CurrentFrame + 1;
+		std::uint32_t const frameEnd   = m_ExportModels.AllFramesSelected ? m_AvailFrameCount : m_CurrentFrame + 1;		
 		for (std::size_t i = 0; i < m_Objects.size(); i++) {
 			if (!m_ExportModels.Exported[i]) continue;
 			for (auto frame = frameBegin; frame < frameEnd; frame++) {
+				fmt::print(fmt::fg(fmt::color::yellow_green), "\r* Exporting \"{}\"... ({}/{})", m_Objects[i]->GetName(), frame - frameBegin + 1, frameEnd - frameBegin);
 				m_Objects[i]->Export(frame, m_ExportModels.Dirname);
 			}
+			fmt::print("\r");
+			spdlog::info("Completed exportation of \"{}\"", m_Objects[i]->GetName());
 		}
 	}
 
