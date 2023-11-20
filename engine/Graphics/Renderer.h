@@ -5,15 +5,15 @@
 #include "Graphics/VertexArray.h"
 
 namespace Pivot {
+	using BufferFlags = std::uint16_t;
+
 	struct BufferFlagBits {
-		enum : std::uint16_t {
+		enum : BufferFlags {
 			Depth   = 1 << 8,
 			Stencil = 1 << 10,
 			Color   = 1 << 14,
 		};
 	};
-
-	using BufferFlags = std::uint16_t;
 
 	class Renderer {
 	public:

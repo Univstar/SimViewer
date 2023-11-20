@@ -158,8 +158,10 @@ namespace Pivot {
 		Menu                = 348,
 	};
 
+	using ModifierFlags = std::uint16_t;
+
 	struct ModifierFlagBits {
-		enum : std::uint16_t {
+		enum : ModifierFlags {
 			Shift           = 1 << 0,
 			Control         = 1 << 1,
 			Alt             = 1 << 2,
@@ -168,6 +170,4 @@ namespace Pivot {
 			NumLock         = 1 << 5,
 		};
 	};
-
-	using ModifierFlags = std::uint16_t;
 }
