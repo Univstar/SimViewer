@@ -11,7 +11,7 @@ namespace Pivot {
 		} else {
 			std::array<GLchar, 1024> buf;
 			glGetProgramInfoLog(program, buf.size(), nullptr, buf.data());
-			spdlog::error("Failed to link Shader {}!\n{}", program, buf.data());
+			spdlog::error("Failed to link Shader {}\n{}", program, buf.data());
 		}
 	}
 	
