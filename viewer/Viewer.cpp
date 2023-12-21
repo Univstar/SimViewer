@@ -6,10 +6,13 @@
 #include "Core/EntryPoint.h"
 #include "Core/Input.h"
 #include "Utils/FileDialog.h"
+#include "Utils/Image.h"
 #include "Utils/ImGuiEx.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
+
+#include <stb_image_write.h>
 
 #include <cxxopts.hpp>
 
@@ -182,9 +185,12 @@ namespace Pivot {
 	}
 
 	bool Viewer::SaveScreenshot() {
-		auto filename = FileDialog::Save({ { "PNG Image", "png"} });
+		auto filename = FileDialog::Save({ { "Portable Network Graphics", "png"}, { "JPEG File Interchange Format", "jpg" }, { "Windows Bitmap", "bmp" } });
 		if (!filename.empty()) {
-			spdlog::debug("{}", filename.string());
+			auto const size = App::Get()->GetWindow()->GetSize();
+			auto const pixels = Renderer::ReadPixels({ 0, 0 }, size, 3);
+			Image::WriteBytes(filename, pixels, size.x, size.y, 3, true);
+			spdlog::info("Screenshot saved in \"{}\"", filename.string());
 			return true;
 		} else {
 			return false;

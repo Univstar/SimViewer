@@ -74,4 +74,25 @@ namespace Pivot {
 			baseVertex);
 		vertexArray->Unbind();
 	}
+
+	std::vector<std::byte> Renderer::ReadPixels(glm::ivec2 const &offset, glm::uvec2 const &extent, std::uint32_t numChannels) {
+		std::vector<std::byte> pixels(extent.x * extent.y * numChannels);
+		switch (numChannels) {
+		case 1:
+			glReadPixels(offset.x, offset.y, extent.x, extent.y, GL_RED, GL_UNSIGNED_BYTE, pixels.data());
+			break;
+		case 2:
+			glReadPixels(offset.x, offset.y, extent.x, extent.y, GL_RG, GL_UNSIGNED_BYTE, pixels.data());
+			break;
+		case 3:
+			glReadPixels(offset.x, offset.y, extent.x, extent.y, GL_RGB, GL_UNSIGNED_BYTE, pixels.data());
+			break;
+		case 4:
+			glReadPixels(offset.x, offset.y, extent.x, extent.y, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+			break;
+		default:
+			spdlog::error("Encountered unsupported number of channels: {}", numChannels);
+		}
+		return pixels;
+	}
 }

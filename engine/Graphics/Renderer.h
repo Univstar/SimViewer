@@ -31,6 +31,8 @@ namespace Pivot {
 		static void Draw(VertexArray *vertexArray, std::int32_t first = 0, std::uint32_t count = 0, std::uint32_t instanceCount = 1);
 		static void Draw(IndexedVertexArray *vertexArray, std::uint32_t count = 0, std::uint32_t instanceCount = 1, std::int32_t baseVertex = 0);
 
+		static std::vector<std::byte> ReadPixels(glm::ivec2 const &offset, glm::uvec2 const &extent, std::uint32_t numChannels = 4);
+
 		static std::unique_ptr<Shader> CreateShader(std::initializer_list<ShaderModule const *> shaderModules) {
 			return std::unique_ptr<Shader>(new Shader(shaderModules));
 		}
