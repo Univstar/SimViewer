@@ -252,6 +252,9 @@ namespace Pivot {
 			"vertex", { "x", "y", "z" }, tinyply::Type::FLOAT32, m_FramesData[posFrame].Positions.size() / m_VecSizeBytes,
 			reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(m_FramesData[posFrame].Positions.data())), tinyply::Type::INVALID, 0);
 		plyFile.add_properties_to_element(
+			"vertex", { "nx", "ny", "nz" }, tinyply::Type::FLOAT32, m_FramesData[posFrame].Normals.size() / m_VecSizeBytes,
+			reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(m_FramesData[posFrame].Normals.data())), tinyply::Type::INVALID, 0);
+		plyFile.add_properties_to_element(
 			"face", { "vertex_indices" }, tinyply::Type::UINT32, m_FramesData[topoFrame].Indices.size() / 3,
 			reinterpret_cast<std::uint8_t *>(const_cast<std::uint32_t *>(m_FramesData[topoFrame].Indices.data())), tinyply::Type::UINT8, 3);
 
