@@ -57,31 +57,37 @@ namespace Pivot {
 		void SetSize(std::uint32_t width, std::uint32_t height);
 		void SetSize(glm::uvec2 const &size) { SetSize(size.x, size.y); }
 	
-	public:
-		template <typename T> void SetHandler(typename T::Handler handler);
-
-#define DECLARE_HANDLER(event)                              \
-	private:                                                \
-		Event::event::Handler m_##event##Handler = nullptr; \
-	public:                                                 \
-		template <> void SetHandler<Event::event>(Event::event::Handler handler) { m_##event##Handler = handler; }
-	
-		DECLARE_HANDLER(WindowClose)
-		DECLARE_HANDLER(WindowSize)
-		DECLARE_HANDLER(FramebufferSize)
-		DECLARE_HANDLER(WindowContentScale)
-		DECLARE_HANDLER(WindowMinimize)
-		DECLARE_HANDLER(WindowMaximize)
-		DECLARE_HANDLER(WindowFocus)
-		DECLARE_HANDLER(WindowHover)
-		DECLARE_HANDLER(WindowRefresh)
-
-		DECLARE_HANDLER(Key)
-		DECLARE_HANDLER(MouseMove)
-		DECLARE_HANDLER(MouseButton)
-		DECLARE_HANDLER(MouseWheel)
-		DECLARE_HANDLER(PathsDrop)
-#undef DECLARE_HANDLER
+		template <typename T> void SetHandler(typename T::Handler handler) {
+			if constexpr (std::is_same_v<T, Event::WindowClose>) {
+				m_WindowCloseHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowSize>) {
+				m_WindowSizeHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::FramebufferSize>) {
+				m_FramebufferSizeHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowContentScale>) {
+				m_WindowContentScaleHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowMinimize>) {
+				m_WindowMinimizeHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowMaximize>) {
+				m_WindowMaximizeHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowFocus>) {
+				m_WindowFocusHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowHover>) {
+				m_WindowHoverHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::WindowRefresh>) {
+				m_WindowRefreshHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::Key>) {
+				m_KeyHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::MouseMove>) {
+				m_MouseMoveHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::MouseButton>) {
+				m_MouseButtonHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::MouseWheel>) {
+				m_MouseWheelHandler = handler;
+			} else if constexpr (std::is_same_v<T, Event::PathsDrop>) {
+				m_PathsDropHandler = handler;
+			}
+		}
 
 	private:
 		void ResetSizeLimits();
@@ -110,5 +116,21 @@ namespace Pivot {
 		std::optional<std::uint32_t> m_MinHeight;
 		std::optional<std::uint32_t> m_MaxWidth;
 		std::optional<std::uint32_t> m_MaxHeight;
+
+		// Event handlers
+		Event::WindowClose::Handler        m_WindowCloseHandler        = nullptr;
+		Event::WindowSize::Handler         m_WindowSizeHandler         = nullptr;
+		Event::FramebufferSize::Handler    m_FramebufferSizeHandler    = nullptr;
+		Event::WindowContentScale::Handler m_WindowContentScaleHandler = nullptr;
+		Event::WindowMinimize::Handler     m_WindowMinimizeHandler     = nullptr;
+		Event::WindowMaximize::Handler     m_WindowMaximizeHandler     = nullptr;
+		Event::WindowFocus::Handler        m_WindowFocusHandler        = nullptr;
+		Event::WindowHover::Handler        m_WindowHoverHandler        = nullptr;
+		Event::WindowRefresh::Handler      m_WindowRefreshHandler      = nullptr;
+		Event::Key::Handler                m_KeyHandler                = nullptr;
+		Event::MouseMove::Handler          m_MouseMoveHandler          = nullptr;
+		Event::MouseButton::Handler        m_MouseButtonHandler        = nullptr;
+		Event::MouseWheel::Handler         m_MouseWheelHandler         = nullptr;
+		Event::PathsDrop::Handler          m_PathsDropHandler          = nullptr;
 	};
 }
