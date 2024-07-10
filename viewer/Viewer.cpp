@@ -4,8 +4,8 @@
 
 #include "Assets.h"
 #include "Core/EntryPoint.h"
+#include "Core/FileDialog.h"
 #include "Core/Input.h"
-#include "Utils/FileDialog.h"
 #include "Utils/Image.h"
 #include "Utils/ImGuiEx.h"
 
@@ -185,7 +185,7 @@ namespace Pivot {
 	}
 
 	bool Viewer::SaveScreenshot() {
-		auto filename = FileDialog::Save({ { "Portable Network Graphics", "png"}, { "JPEG File Interchange Format", "jpg" }, { "Windows Bitmap", "bmp" } });
+		auto filename = FileDialog::Save({ { "Portable Network Graphics", "png"}, { "JPEG File Interchange Format", "jpg" }, { "Windows Bitmap", "bmp" } }, App::Get()->GetWindow());
 		if (!filename.empty()) {
 			auto const size = App::Get()->GetWindow()->GetSize();
 			auto const pixels = Renderer::ReadPixels({ 0, 0 }, size, 3);
@@ -304,7 +304,7 @@ namespace Pivot {
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Browse")) {
-				auto newDirname = FileDialog::PickFolder(m_ExportModels.Dirname);
+				auto newDirname = FileDialog::PickFolder(App::Get()->GetWindow(), m_ExportModels.Dirname);
 				if (!newDirname.empty()) {
 					m_ExportModels.Dirname = newDirname;
 					m_ExportModels.DirnameStr = m_ExportModels.Dirname.string();

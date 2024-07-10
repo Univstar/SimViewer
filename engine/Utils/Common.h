@@ -14,6 +14,7 @@
 #include <array>
 #include <atomic>
 #include <chrono>
+#include <codecvt>
 #include <filesystem>
 #include <fstream>
 #include <functional>

@@ -240,6 +240,7 @@ namespace Pivot {
 	void ViewObject::Export(std::uint32_t frame, std::filesystem::path const &dirname) const {
 		// TODO: support more types
 		if (m_VertexArray->GetPrimitiveType() != PrimitiveType::Triangles || m_VecSizeBytes != 3 * sizeof(float) || !m_Indexed) {
+			fmt::print("\r");
 			spdlog::warn("Encountered unsupported primitives");
 			return;
 		}
