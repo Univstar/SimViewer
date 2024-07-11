@@ -506,6 +506,11 @@ namespace Pivot {
 				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
 				break;
 			}
+			case ViewShader::Default2D_Points: {
+				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
+				ImGui::SliderFloat("Scale", &curMat.RadScale, .1f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				break;
+			}
 			case ViewShader::Default3D_Triangles:
 			case ViewShader::Default3d_Points: {
 				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));

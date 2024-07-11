@@ -92,6 +92,9 @@ namespace Pivot {
 		if (shaderName == "heatmap") {
 			m_AttribFlags |= AttribFlagBits::Heat;
 		}
+		if (primitive == PrimitiveType::Points) {
+			m_AttribFlags |= AttribFlagBits::Radius;
+		}
 
 		VertexLayout layout;
 		if (dimension == 2) {
@@ -101,6 +104,8 @@ namespace Pivot {
 				layout = std::move(layout).Add<glm::vec2>("TexCoords", 1);
 			if (m_AttribFlags & AttribFlagBits::Heat)
 				layout = std::move(layout).Add<float>("Heats", 1);
+			if (m_AttribFlags & AttribFlagBits::Radius)
+				layout = std::move(layout).Add<float>("Radii", 2);
 		} else {
 			if (m_AttribFlags & AttribFlagBits::Position)
 				layout = std::move(layout).Add<glm::vec3>("Positions", 0);
@@ -110,6 +115,8 @@ namespace Pivot {
 				layout = std::move(layout).Add<glm::vec2>("TexCoords", 2);
 			if (m_AttribFlags & AttribFlagBits::Heat)
 				layout = std::move(layout).Add<float>("Heats", 2);
+			if (m_AttribFlags & AttribFlagBits::Radius)
+				layout = std::move(layout).Add<float>("Radii", 3);
 		}
 
 		if (m_Indexed) {
@@ -154,6 +161,10 @@ namespace Pivot {
 			frameData.TexCoords.resize(vtxCount * sizeof(float) * 2);
 			IO::Read(fin, frameData.TexCoords);
 		}
+		if ((!m_TopoFixed || initial) && (m_AttribFlags & AttribFlagBits::Radius)) {
+			frameData.Radii.resize(vtxCount * sizeof(float));
+			IO::Read(fin, frameData.Radii);
+		}
 		if ((!m_TopoFixed || initial) && m_Indexed) {
 			std::uint32_t idxCount;
 			IO::Read(fin, idxCount);
@@ -178,6 +189,8 @@ namespace Pivot {
 				m_VertexArray->GetBufferByName("Heats")->Upload(m_FramesData[posFrame].Heats);
 			if (m_AttribFlags & AttribFlagBits::TexCoord)
 				m_VertexArray->GetBufferByName("TexCoords")->Upload(m_FramesData[topoFrame].TexCoords);
+			if (m_AttribFlags & AttribFlagBits::Radius)
+				m_VertexArray->GetBufferByName("Radii")->Upload(m_FramesData[topoFrame].Radii);
 			if (m_Indexed) {
 				auto indexedVA = reinterpret_cast<IndexedVertexArray *>(m_VertexArray.get());
 				indexedVA->GetIndexBuffer()->Upload(m_FramesData[topoFrame].Indices);
@@ -193,6 +206,8 @@ namespace Pivot {
 			if (!m_TopoFixed) {
 				if (m_AttribFlags & AttribFlagBits::TexCoord)
 					m_VertexArray->GetBufferByName("TexCoords")->Upload(m_FramesData[frame].TexCoords);
+				if (m_AttribFlags & AttribFlagBits::Radius)
+					m_VertexArray->GetBufferByName("Radii")->Upload(m_FramesData[frame].Radii);
 				if (m_Indexed) {
 					auto indexedVA = reinterpret_cast<IndexedVertexArray *>(m_VertexArray.get());
 					indexedVA->GetIndexBuffer()->Upload(m_FramesData[frame].Indices);
@@ -208,6 +223,10 @@ namespace Pivot {
 		switch (m_ViewShader) {
 		case ViewShader::Default2D:
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
+			break;
+		case ViewShader::Default2D_Points:
+			shader->SetUniform("u_Albedo", m_Material.Albedo);
+			shader->SetUniform("u_RadScale", m_Material.RadScale);
 			break;
 		case ViewShader::Default3D_Triangles:
 		case ViewShader::Default3d_Points:

@@ -7,6 +7,7 @@ namespace Pivot {
 
 	enum class ViewShader : std::uint16_t {
 		Default2D,
+		Default2D_Points,
 		Default3D_Triangles,
 		Default3d_Points,
 		Heatmap2D,
@@ -20,6 +21,7 @@ namespace Pivot {
 			Normal   = 1 << 1,
 			TexCoord = 1 << 2,
 			Heat     = 1 << 3,
+			Radius   = 1 << 4,
 		};
 	};
 
@@ -42,6 +44,8 @@ namespace Pivot {
 
 		float     HeatMin   = +std::numeric_limits<float>::infinity();
 		float     HeatMax   = -std::numeric_limits<float>::infinity();
+
+		float     RadScale  = .8;
 
 		bool      Visible   = true;
 	};

@@ -18,6 +18,7 @@ namespace Pivot {
 	private:
 		static constexpr auto c_Names = std::to_array<std::string_view>({
 			"default",
+			"default (points)",
 			"default (triangles)",
 			"default (points)",
 			"heatmap",
@@ -29,7 +30,7 @@ namespace Pivot {
 		static inline std::unordered_map<std::string, ViewShader> const c_NameToViewShader = {
 			{ "default_2d_triangles", ViewShader::Default2D           },
 			{ "default_2d_lines"    , ViewShader::Default2D           },
-			{ "default_2d_points"   , ViewShader::Default2D           },
+			{ "default_2d_points"   , ViewShader::Default2D_Points    },
 			{ "default_3d_triangles", ViewShader::Default3D_Triangles },
 			// { "default_3d_lines"    , ViewShader::Default3D_Lines     },
 			{ "default_3d_points"   , ViewShader::Default3d_Points    },

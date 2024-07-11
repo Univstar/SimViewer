@@ -19,6 +19,13 @@ namespace Pivot {
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Default2D)] = std::move(shader);
 		}
+		{ // Default 2D shader of points
+			auto vs = Renderer::CreateShaderModule("assets/shaders/default_2d_points.vert");
+			auto gs = Renderer::CreateShaderModule("assets/shaders/default_2d_points.geom");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/default_2d_points.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Default2D_Points)] = std::move(shader);
+		}
 		{ // Default 3D shader of triangles
 			auto vs = Renderer::CreateShaderModule("assets/shaders/default_3d_triangles.vert");
 			auto gs = Renderer::CreateShaderModule("assets/shaders/default_3d_triangles.geom");
