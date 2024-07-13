@@ -25,6 +25,7 @@ namespace Pivot {
 		static void SetWireframed(bool enabled = true);
 		static void SetBackFaceCulled(bool enabled = true);
 		static void SetMultisampled(bool enabled = true);
+		static void SetBlended(bool enabled = true);
 		static void SetClearColor(glm::vec4 const &color);
 		static void Clear(BufferFlags bufferFlags);
 

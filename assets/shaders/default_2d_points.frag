@@ -10,7 +10,8 @@ uniform vec4 u_Albedo;
 void main() {
 	float dist = distance(g_TexCoord, vec2(0.5, 0.5)) * 2.;
 	if (dist < 1.) {
-		f_Color = mix(u_Albedo, vec4(0., 0., 0., 1.), smoothstep(.618034, 1., dist));
+		f_Color = u_Albedo;
+		f_Color.a = mix(u_Albedo.a, 0., smoothstep(.618034, 1., dist));
 	} else {
 		discard;
 	}

@@ -28,6 +28,7 @@ namespace Pivot {
 		Renderer::SetClearColor(m_Appearance.Background);
 		Renderer::SetMultisampled(m_Appearance.Multisampled);
 		Renderer::SetBackFaceCulled(m_Appearance.BackFaceCulled);
+		Renderer::SetBlended(true);
 	}
 
 	Viewer::Viewer(std::filesystem::path const &dirname) : Viewer() {

@@ -45,6 +45,15 @@ namespace Pivot {
 		}
 	}
 
+	void Renderer::SetBlended(bool enabled) {
+		if (enabled) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		} else {
+			glDisable(GL_BLEND);
+		}
+	}
+
 	void Renderer::SetClearColor(glm::vec4 const &color) {
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
