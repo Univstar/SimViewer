@@ -22,6 +22,7 @@ namespace Pivot {
 			"default (triangles)",
 			"default (points)",
 			"heatmap",
+			"heatmap (points)",
 			"heatmap (triangles)",
 		});
 
@@ -33,10 +34,10 @@ namespace Pivot {
 			{ "default_2d_points"   , ViewShader::Default2D_Points    },
 			{ "default_3d_triangles", ViewShader::Default3D_Triangles },
 			// { "default_3d_lines"    , ViewShader::Default3D_Lines     },
-			{ "default_3d_points"   , ViewShader::Default3d_Points    },
+			{ "default_3d_points"   , ViewShader::Default3D_Points    },
 			{ "heatmap_2d_triangles", ViewShader::Heatmap2D },
 			{ "heatmap_2d_lines"    , ViewShader::Heatmap2D },
-			{ "heatmap_2d_points"   , ViewShader::Heatmap2D },
+			{ "heatmap_2d_points"   , ViewShader::Heatmap2D_Points },
 			{ "heatmap_3d_triangles", ViewShader::Heatmap3D_Triangles },
 		};
 	};

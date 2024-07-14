@@ -72,6 +72,7 @@ namespace Pivot {
 		SetValue(shaderName, node["Shader"]);
 		m_ViewShader = ViewShaderPool::GetViewShader(fmt::format("{}_{}d_{}", shaderName, dimension, c_PrimitiveNames[static_cast<std::size_t>(primitive)]));
 		if (m_ViewShader == ViewShader::Count) { // invalid shader name
+			spdlog::error("Failed to find the shader \"{}_{}d_{}\"", shaderName, dimension, c_PrimitiveNames[static_cast<std::size_t>(primitive)]);
 			m_ViewShader = ViewShaderPool::GetViewShader(fmt::format("default_{}d_{}", dimension, c_PrimitiveNames[static_cast<std::size_t>(primitive)]));
 		}
 
@@ -203,15 +204,13 @@ namespace Pivot {
 				m_VertexArray->GetBufferByName("Normals")->Upload(m_FramesData[frame].Normals);
 			if (m_AttribFlags & AttribFlagBits::Heat)
 				m_VertexArray->GetBufferByName("Heats")->Upload(m_FramesData[frame].Heats);
-			if (!m_TopoFixed) {
-				if (m_AttribFlags & AttribFlagBits::TexCoord)
-					m_VertexArray->GetBufferByName("TexCoords")->Upload(m_FramesData[frame].TexCoords);
-				if (m_AttribFlags & AttribFlagBits::Radius)
-					m_VertexArray->GetBufferByName("Radii")->Upload(m_FramesData[frame].Radii);
-				if (m_Indexed) {
-					auto indexedVA = reinterpret_cast<IndexedVertexArray *>(m_VertexArray.get());
-					indexedVA->GetIndexBuffer()->Upload(m_FramesData[frame].Indices);
-				}
+			if (!m_TopoFixed && (m_AttribFlags & AttribFlagBits::TexCoord))
+				m_VertexArray->GetBufferByName("TexCoords")->Upload(m_FramesData[frame].TexCoords);
+			if (m_AttribFlags & AttribFlagBits::Radius)
+				m_VertexArray->GetBufferByName("Radii")->Upload(m_FramesData[frame].Radii);
+			if (!m_TopoFixed && m_Indexed) {
+				auto indexedVA = reinterpret_cast<IndexedVertexArray *>(m_VertexArray.get());
+				indexedVA->GetIndexBuffer()->Upload(m_FramesData[frame].Indices);
 			}
 		}
 	}
@@ -229,12 +228,17 @@ namespace Pivot {
 			shader->SetUniform("u_RadScale", m_Material.RadScale);
 			break;
 		case ViewShader::Default3D_Triangles:
-		case ViewShader::Default3d_Points:
+		case ViewShader::Default3D_Points:
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
 			break;
 		case ViewShader::Heatmap2D:
+			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
+			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			break;
+		case ViewShader::Heatmap2D_Points:
+			shader->SetUniform("u_RadScale", m_Material.RadScale);
 			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
 			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
 			break;

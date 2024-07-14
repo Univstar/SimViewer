@@ -37,13 +37,20 @@ namespace Pivot {
 			auto vs = Renderer::CreateShaderModule("assets/shaders/default_3d_points.vert");
 			auto fs = Renderer::CreateShaderModule("assets/shaders/default_3d_points.frag");
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
-			s_Shaders[static_cast<std::size_t>(ViewShader::Default3d_Points)] = std::move(shader);
+			s_Shaders[static_cast<std::size_t>(ViewShader::Default3D_Points)] = std::move(shader);
 		}
 		{ // Heatmap 2D shader
 			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.vert");
 			auto fs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d.frag");
 			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap2D)] = std::move(shader);
+		}
+		{ // Heatmap 2D shader of points
+			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d_points.vert");
+			auto gs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d_points.geom");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/heatmap_2d_points.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap2D_Points)] = std::move(shader);
 		}
 		{ // Heatmap 3D shader of triangles
 			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_3d_triangles.vert");
