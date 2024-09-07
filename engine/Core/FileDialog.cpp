@@ -43,6 +43,7 @@ namespace Pivot {
 			return { };
 		} else {
 			spdlog::error("Failed in OpenDialog. {}", NFD_GetError());
+			return { };
 		}
 	}
 
@@ -68,6 +69,7 @@ namespace Pivot {
 			return { };
 		} else {
 			spdlog::error("Failed in SaveDialog. {}", NFD_GetError());
+			return { };
 		}
 	}
 
@@ -90,6 +92,7 @@ namespace Pivot {
 			return { };
 		} else {
 			spdlog::error("Failed in PickFolder. {}", NFD_GetError());
+			return { };
 		}
 	}
 }
