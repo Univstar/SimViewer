@@ -347,40 +347,56 @@ namespace Pivot {
             return;
         }
 
-        auto const topoFrame = m_Animated && ! m_TopoFixed ? frame : 0;
-        auto const posFrame  = m_Animated ? frame : 0;
+        switch (m_VertexArray->GetPrimitiveType()) {
+        case PrimitiveType::Triangles: {
+            if (m_VecSizeBytes != 3 * sizeof(float) || ! m_Indexed) {
+                fmt::print("\r");
+                spdlog::warn("Encountered unsupported data in Triangles");
+                return;
+            }
 
-        tinyply::PlyFile plyFile;
-        plyFile.add_properties_to_element(
-            "vertex",
-            { "x", "y", "z" },
-            tinyply::Type::FLOAT32,
-            m_FramesData[posFrame].Positions.size() / m_VecSizeBytes,
-            reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(
-                m_FramesData[posFrame].Positions.data())),
-            tinyply::Type::INVALID,
-            0);
-        plyFile.add_properties_to_element(
-            "vertex",
-            { "nx", "ny", "nz" },
-            tinyply::Type::FLOAT32,
-            m_FramesData[posFrame].Normals.size() / m_VecSizeBytes,
-            reinterpret_cast<std::uint8_t *>(
-                const_cast<std::byte *>(m_FramesData[posFrame].Normals.data())),
-            tinyply::Type::INVALID,
-            0);
-        plyFile.add_properties_to_element(
-            "face",
-            { "vertex_indices" },
-            tinyply::Type::UINT32,
-            m_FramesData[topoFrame].Indices.size() / 3,
-            reinterpret_cast<std::uint8_t *>(const_cast<std::uint32_t *>(
-                m_FramesData[topoFrame].Indices.data())),
-            tinyply::Type::UINT8,
-            3);
+            auto const topoFrame = m_Animated && ! m_TopoFixed ? frame : 0;
+            auto const posFrame  = m_Animated ? frame : 0;
 
-        auto const filename = dirname / fmt::format("{}-{}.ply", m_Name, frame);
-        std::ofstream fout(filename, std::ios::binary);
-        plyFile.write(fout, true);
+            tinyply::PlyFile plyFile;
+            plyFile.add_properties_to_element(
+                "vertex",
+                { "x", "y", "z" },
+                tinyply::Type::FLOAT32,
+                m_FramesData[posFrame].Positions.size() / m_VecSizeBytes,
+                reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(
+                    m_FramesData[posFrame].Positions.data())),
+                tinyply::Type::INVALID,
+                0);
+            plyFile.add_properties_to_element(
+                "vertex",
+                { "nx", "ny", "nz" },
+                tinyply::Type::FLOAT32,
+                m_FramesData[posFrame].Normals.size() / m_VecSizeBytes,
+                reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(
+                    m_FramesData[posFrame].Normals.data())),
+                tinyply::Type::INVALID,
+                0);
+            plyFile.add_properties_to_element(
+                "face",
+                { "vertex_indices" },
+                tinyply::Type::UINT32,
+                m_FramesData[topoFrame].Indices.size() / 3,
+                reinterpret_cast<std::uint8_t *>(const_cast<std::uint32_t *>(
+                    m_FramesData[topoFrame].Indices.data())),
+                tinyply::Type::UINT8,
+                3);
+
+            auto const filename =
+                dirname / fmt::format("{}-{}.ply", m_Name, frame);
+            std::ofstream fout(filename, std::ios::binary);
+            plyFile.write(fout, true);
+            break;
+        }
+        case PrimitiveType::Points: {
+            tinyply::PlyFile plyFile;
+        }
+        default: break;
+        }
     }
 } // namespace Pivot

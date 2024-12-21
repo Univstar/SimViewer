@@ -2,7 +2,7 @@
 
 layout(location = 0) in  vec3  g_Position;
 layout(location = 1) in  vec3  g_Normal;
-layout(location = 2) in  vec3  g_TexCoord;
+layout(location = 2) in  vec2  g_TexCoord;
 layout(location = 3) in  float g_Heat;
 
 layout(location = 0) out vec4  f_Color;
@@ -29,7 +29,7 @@ vec3 GetJet(float heat) {
 }
 
 void main() {
-	float dist = distance(g_TexCoord, vec3(0.5, 0.5, 0.5)) * 2;
+	float dist = distance(g_TexCoord, vec2(0.5, 0.5)) * 2;
 	if (dist < 1.) {
 		float heat = u_HeatScale > 0 ? (g_Heat + u_HeatBias) * u_HeatScale : .5;
 		f_Color = vec4(GetJet(heat), mix(1., 0., smoothstep(.618034, 1., dist)));
