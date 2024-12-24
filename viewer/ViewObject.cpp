@@ -340,12 +340,12 @@ namespace Pivot {
     void ViewObject::Export(
         std::uint32_t frame, std::filesystem::path const & dirname) const {
         // TODO: support more types
-        if (m_VertexArray->GetPrimitiveType() != PrimitiveType::Triangles
-            || m_VecSizeBytes != 3 * sizeof(float) || ! m_Indexed) {
-            fmt::print("\r");
-            spdlog::warn("Encountered unsupported primitives");
-            return;
-        }
+        // if (m_VertexArray->GetPrimitiveType() != PrimitiveType::Triangles
+        //    || m_VecSizeBytes != 3 * sizeof(float) || ! m_Indexed) {
+        //    fmt::print("\r");
+        //    spdlog::warn("Encountered unsupported primitives");
+        //    return;
+        //}
 
         switch (m_VertexArray->GetPrimitiveType()) {
         case PrimitiveType::Triangles: {
@@ -395,8 +395,43 @@ namespace Pivot {
         }
         case PrimitiveType::Points: {
             tinyply::PlyFile plyFile;
+            plyFile.add_properties_to_element(
+                "vertex",
+                { "x", "y", "z" },
+                tinyply::Type::FLOAT32,
+                m_FramesData[frame].Positions.size() / m_VecSizeBytes,
+                reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(
+                    m_FramesData[frame].Positions.data())),
+                tinyply::Type::INVALID,
+                0);
+
+            if (m_AttribFlags & AttribFlagBits::Heat) {
+                plyFile.add_properties_to_element(
+                    "vertex",
+                    { "r" },
+                    tinyply::Type::FLOAT32,
+                    m_FramesData[frame].Heats.size() / sizeof(float),
+                    reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(
+                        m_FramesData[frame].Heats.data())),
+                    tinyply::Type::INVALID,
+                    0);
+            }
+
+            auto const filename =
+                dirname / fmt::format("{}-{}.ply", m_Name, frame);
+            // std::ofstream fout(filename, std::ios::binary);
+            // plyFile.write(fout, true);
+            std::ofstream fout(filename);
+            plyFile.write(fout, false);
+            break;
         }
-        default: break;
+        default: {
+            fmt::print("\r");
+            spdlog::warn(
+                "Encountered unsupported primitives: "
+                + std::to_string(uint16_t(m_VertexArray->GetPrimitiveType())));
+            return;
+        }
         }
     }
 } // namespace Pivot
