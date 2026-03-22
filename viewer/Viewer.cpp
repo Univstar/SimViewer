@@ -522,6 +522,13 @@ namespace Pivot {
 			case ViewShader::Heatmap2D: {
 				ImGui::Spacing();
 				ImGui::SeparatorText("Heat");
+				if (ImGui::RadioButton("Sequential", !curMat.HeatDiv)) {
+					curMat.HeatDiv = false;
+				}
+				ImGui::SameLine();
+				if (ImGui::RadioButton("Diverging", curMat.HeatDiv)) {
+					curMat.HeatDiv = true;
+				}
 				ImGui::BeginDisabled();
 				std::array heatRange = { curMat.HeatMin, curMat.HeatMax };
 				ImGui::InputFloat2("Range", heatRange.data(), "%g");
@@ -532,6 +539,13 @@ namespace Pivot {
 				ImGui::SliderFloat("Scale", &curMat.RadScale, .1f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				ImGui::Spacing();
 				ImGui::SeparatorText("Heat");
+				if (ImGui::RadioButton("Sequential", !curMat.HeatDiv)) {
+					curMat.HeatDiv = false;
+				}
+				ImGui::SameLine();
+				if (ImGui::RadioButton("Diverging", curMat.HeatDiv)) {
+					curMat.HeatDiv = true;
+				}
 				ImGui::BeginDisabled();
 				std::array heatRange = { curMat.HeatMin, curMat.HeatMax };
 				ImGui::InputFloat2("Range", heatRange.data(), "%g");
@@ -543,6 +557,13 @@ namespace Pivot {
 				ImGui::SliderFloat("Roughness", &curMat.Roughness, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				ImGui::Spacing();
 				ImGui::SeparatorText("Heat");
+				if (ImGui::RadioButton("Sequential", !curMat.HeatDiv)) {
+					curMat.HeatDiv = false;
+				}
+				ImGui::SameLine();
+				if (ImGui::RadioButton("Diverging", curMat.HeatDiv)) {
+					curMat.HeatDiv = true;
+				}
 				ImGui::BeginDisabled();
 				std::array heatRange = { curMat.HeatMin, curMat.HeatMax };
 				ImGui::InputFloat2("Range", heatRange.data(), "%g");

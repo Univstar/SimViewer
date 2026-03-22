@@ -43,6 +43,7 @@ namespace Pivot {
 		float     Metallic  = 0;
 		float     Roughness = .5f;
 
+		bool      HeatDiv   = false; // whether the heatmap is diverging (true) or sequential (false)
 		float     HeatMin   = +std::numeric_limits<float>::infinity();
 		float     HeatMax   = -std::numeric_limits<float>::infinity();
 

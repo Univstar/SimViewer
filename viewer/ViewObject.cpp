@@ -92,6 +92,7 @@ namespace Pivot {
 		if (dimension == 3) m_AttribFlags |= AttribFlagBits::Normal;
 		if (shaderName == "heatmap") {
 			m_AttribFlags |= AttribFlagBits::Heat;
+			SetValue(m_Material.HeatDiv, node["HeatDiv"]);
 		}
 		if (primitive == PrimitiveType::Points) {
 			m_AttribFlags |= AttribFlagBits::Radius;
@@ -234,19 +235,37 @@ namespace Pivot {
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
 			break;
 		case ViewShader::Heatmap2D:
-			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
-			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			if (m_Material.HeatDiv) {
+				float const maxAbsHeat = std::max(std::abs(m_Material.HeatMin), std::abs(m_Material.HeatMax));
+				shader->SetUniform("u_HeatBias", maxAbsHeat);
+				shader->SetUniform("u_HeatScale", maxAbsHeat ? .5f / maxAbsHeat : 0.f);
+			} else {
+				shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
+				shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			}
 			break;
 		case ViewShader::Heatmap2D_Points:
 			shader->SetUniform("u_RadScale", m_Material.RadScale);
-			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
-			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			if (m_Material.HeatDiv) {
+				float const maxAbsHeat = std::max(std::abs(m_Material.HeatMin), std::abs(m_Material.HeatMax));
+				shader->SetUniform("u_HeatBias", maxAbsHeat);
+				shader->SetUniform("u_HeatScale", maxAbsHeat ? .5f / maxAbsHeat : 0.f);
+			} else {
+				shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
+				shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			}
 			break;
 		case ViewShader::Heatmap3D_Triangles:
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
-			shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
-			shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			if (m_Material.HeatDiv) {
+				float const maxAbsHeat = std::max(std::abs(m_Material.HeatMin), std::abs(m_Material.HeatMax));
+				shader->SetUniform("u_HeatBias", maxAbsHeat);
+				shader->SetUniform("u_HeatScale", maxAbsHeat ? .5f / maxAbsHeat : 0.f);
+			} else {
+				shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
+				shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
+			}
 			break;
 		}
 		
