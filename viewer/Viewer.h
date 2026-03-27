@@ -1,6 +1,8 @@
 #pragma once
 
+#include "AnimationExporter.h"
 #include "ViewLoader.h"
+#include "ViewStructs.h"
 
 #include "Core/Kernel.h"
 #include "Graphics/Renderer.h"
@@ -27,7 +29,11 @@ namespace Pivot {
 	private:
 		bool LoadDirectory(std::filesystem::path const &dirname);
 		bool SaveScreenshot();
+		bool SaveFrameImage(std::filesystem::path const &filename) const;
 		void ExportModels();
+		void UpdateCurrentFrame(float deltaTime);
+		void UploadCurrentFrame();
+		void RenderScene();
 
 		void RenderSideBars();
 		void RenderPopups();
@@ -54,6 +60,7 @@ namespace Pivot {
 		ViewLoader     m_Loader;
 
 		ViewExportModels m_ExportModels;
+		AnimationExporter m_AnimationExporter;
 		ViewAnimation    m_Animation;
 		ViewAppearance   m_Appearance;
 		ViewCameraInfo   m_CameraInfo;
