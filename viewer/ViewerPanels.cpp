@@ -230,6 +230,10 @@ namespace Pivot {
 				ImGui::EndDisabled();
 				break;
 			}
+			case ViewShader::Fracmap2D: {
+				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
+				break;
+			}
 			}
 		}
 		ImGui::End();

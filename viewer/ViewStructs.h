@@ -13,6 +13,7 @@ namespace Pivot {
 		Heatmap2D,
 		Heatmap2D_Points,
 		Heatmap3D_Triangles,
+		Fracmap2D,
 		Count,
 	};
 

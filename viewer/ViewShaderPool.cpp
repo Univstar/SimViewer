@@ -59,6 +59,12 @@ namespace Pivot {
 			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap3D_Triangles)] = std::move(shader);
 		}
+		{ // Fracmap 2D shader
+			auto vs = Renderer::CreateShaderModule("assets/shaders/fracmap_2d.vert");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/fracmap_2d.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Fracmap2D)] = std::move(shader);
+		}
 	}
 
 	void ViewShaderPool::DestroyShaders() {

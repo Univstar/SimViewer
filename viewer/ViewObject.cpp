@@ -94,6 +94,9 @@ namespace Pivot {
 			m_AttribFlags |= AttribFlagBits::Heat;
 			SetValue(m_Material.HeatDiv, node["HeatDiv"]);
 		}
+		if (shaderName == "fracmap") {
+			m_AttribFlags |= AttribFlagBits::Heat;
+		}
 		if (primitive == PrimitiveType::Points) {
 			m_AttribFlags |= AttribFlagBits::Radius;
 		}
@@ -266,6 +269,9 @@ namespace Pivot {
 				shader->SetUniform("u_HeatBias", -m_Material.HeatMin);
 				shader->SetUniform("u_HeatScale", m_Material.HeatMin == m_Material.HeatMax ? 0.f : 1.f / (m_Material.HeatMax - m_Material.HeatMin));
 			}
+			break;
+		case ViewShader::Fracmap2D:
+			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			break;
 		}
 		
