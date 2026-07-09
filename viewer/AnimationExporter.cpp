@@ -105,14 +105,17 @@ namespace Pivot {
 		}
 
 		auto const inputPattern = m_State.TempDir / "frame_%06d.png";
+		auto const ffmpegLog = (m_State.Filename.parent_path() / "ffmpeg.log").string();
 		auto const command = fmt::format(
-			"{} -y -framerate {} -i {} -c:v libx264 -pix_fmt yuv420p {} >nul 2>&1",
+			"{} -y -framerate {} -i {} -vf scale=trunc(iw/2)*2:trunc(ih/2)*2 -c:v libx264 -pix_fmt yuv420p {} 2>{}",
 			QuoteCommandExecutable(ffmpeg),
 			m_State.FrameRate,
 			QuoteCommandArg(inputPattern),
-			QuoteCommandArg(m_State.Filename));
+			QuoteCommandArg(m_State.Filename),
+			QuoteCommandArg(std::string_view(ffmpegLog)));
 
 		m_State.Status = "Encoding mp4 with ffmpeg...";
+		spdlog::info("Running: {}", command);
 		if (std::system(command.c_str()) != 0) {
 			Fail("ffmpeg failed to encode the mp4 file.");
 			return false;
