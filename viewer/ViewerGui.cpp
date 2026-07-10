@@ -87,6 +87,13 @@ namespace Pivot {
 			} else {
 				ImGui::Text("Loading... %.1f%%", 100.f * m_AvailFrameCount / m_FrameCount);
 			}
+			if (m_GridRes.x > 0 && m_CursorCell.x >= 0 && m_CursorCell.x < m_GridRes.x
+			                      && m_CursorCell.y >= 0 && m_CursorCell.y < m_GridRes.y) {
+				ImGui::SameLine();
+				ImGui::Text(" | Cell: (%d, %d)  World: (%.4f, %.4f)",
+					m_CursorCell.x, m_CursorCell.y,
+					m_CursorWorldPos.x, m_CursorWorldPos.y);
+			}
 			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 			ImGuiEx::TextRightAligned("%u/%u", m_CurrentFrame, m_AvailFrameCount - 1);
 			ImGui::PopFont();

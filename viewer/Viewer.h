@@ -66,6 +66,12 @@ namespace Pivot {
 		ViewCameraInfo   m_CameraInfo;
 		ViewObjectsInfo  m_ObjectsInfo;
 
+		glm::ivec2 m_GridRes{0, 0};
+		float      m_GridSpacing = 0.f;
+		glm::vec2  m_GridOrigin{0.f, 0.f};
+		glm::ivec2 m_CursorCell{-1, -1};
+		glm::vec2  m_CursorWorldPos{0.f, 0.f};
+
 		bool m_MenuBarVisible   = true;
 		bool m_StatusBarVisible = true;
 	};

@@ -20,6 +20,17 @@ namespace Pivot {
 		App::Get()->GetWindow()->SetTitle(fmt::format("Pivot Viewer ({}D) - {}", m_Dimension, m_Dirname.string()));
 		auto radius = m_Description["Radius"] ? m_Description["Radius"].as<float>() : 1.f;
 		if (m_Dimension == 2) {
+			if (auto resNode = m_Description["GridResolution"]) {
+				m_GridRes = { resNode[0].as<int>(), resNode[1].as<int>() };
+			}
+			if (auto spNode = m_Description["GridSpacing"]) {
+				m_GridSpacing = spNode.as<float>();
+			}
+			if (auto orNode = m_Description["GridOrigin"]) {
+				m_GridOrigin = { orNode[0].as<float>(), orNode[1].as<float>() };
+			}
+		}
+		if (m_Dimension == 2) {
 			m_Camera = std::make_unique<OrthoCamera>(glm::vec2(0), radius * 2);
 			m_InitialCamera = std::make_unique<OrthoCamera>(*reinterpret_cast<OrthoCamera *>(m_Camera.get()));
 		} else {

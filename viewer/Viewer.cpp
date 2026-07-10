@@ -100,6 +100,32 @@ namespace Pivot {
 			m_Camera->Translate((mousePos - m_CameraInfo.LastMousePos) / (1.f * App::Get()->GetWindow()->GetHeight()));
 		}
 		m_CameraInfo.LastMousePos = mousePos;
+
+		if (m_Dimension == 2 && m_GridRes.x > 0) {
+			auto ortho = static_cast<OrthoCamera*>(m_Camera.get());
+			auto window = App::Get()->GetWindow();
+			auto fbSize = window->GetFbSize();
+			auto winSize = window->GetSize();
+			float sx = static_cast<float>(fbSize.x) / static_cast<float>(winSize.x);
+			float sy = static_cast<float>(fbSize.y) / static_cast<float>(winSize.y);
+
+			float mpx = xPos * sx;
+			float mpy = static_cast<float>(fbSize.y) - yPos * sy;
+
+			float aspect = static_cast<float>(fbSize.x) / static_cast<float>(fbSize.y);
+			float halfH = ortho->GetHeight() * 0.5f;
+			float halfW = halfH * aspect;
+			glm::vec2 center = ortho->GetCenter();
+
+			m_CursorWorldPos = {
+				center.x + (mpx / static_cast<float>(fbSize.x) - 0.5f) * 2.f * halfW,
+				center.y + (mpy / static_cast<float>(fbSize.y) - 0.5f) * 2.f * halfH
+			};
+			m_CursorCell = {
+				static_cast<int>(std::floor((m_CursorWorldPos.x - m_GridOrigin.x) / m_GridSpacing)),
+				static_cast<int>(std::floor((m_CursorWorldPos.y - m_GridOrigin.y) / m_GridSpacing))
+			};
+		}
 	}
 
 	std::unique_ptr<App> CreateApp(CmdLineArgs args) {
