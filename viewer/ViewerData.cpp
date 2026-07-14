@@ -31,7 +31,15 @@ namespace Pivot {
 			}
 		}
 		if (m_Dimension == 2) {
-			m_Camera = std::make_unique<OrthoCamera>(glm::vec2(0), radius * 2);
+			glm::vec2 cameraCenter { 0.f };
+			float cameraHeight = radius * 2.f;
+			if (m_GridRes.x > 0 && m_GridRes.y > 0 && m_GridSpacing > 0.f) {
+				glm::vec2 const gridSize = glm::vec2(m_GridRes) * m_GridSpacing;
+				cameraCenter = m_GridOrigin + gridSize * 0.5f;
+				float const aspect = App::Get()->GetWindow()->GetAspect();
+				cameraHeight = std::max(gridSize.y, gridSize.x / aspect);
+			}
+			m_Camera = std::make_unique<OrthoCamera>(cameraCenter, cameraHeight);
 			m_InitialCamera = std::make_unique<OrthoCamera>(*reinterpret_cast<OrthoCamera *>(m_Camera.get()));
 		} else {
 			m_Camera = std::make_unique<OrbitCamera>(glm::vec3(0), radius);
