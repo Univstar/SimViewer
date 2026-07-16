@@ -14,8 +14,11 @@ namespace Pivot {
 	class Viewer : public Kernel {
 	public:
 		Viewer();
-		Viewer(std::filesystem::path const &dirname);
+		Viewer(std::filesystem::path const &dirname, bool cliExport = false, float fps = 25.f);
 		~Viewer();
+
+		void StartCliExport(float fps);
+		bool IsCliExportDone() const;
 
 		virtual void Tick(float deltaTime) override;
 		virtual void RenderGui() override;
@@ -50,6 +53,9 @@ namespace Pivot {
 		std::uint32_t         m_FrameCount;
 		std::uint32_t         m_CurrentFrame;
 		std::uint32_t         m_AvailFrameCount;
+
+		bool m_CliExport     = false;
+		bool m_CliExportDone = false;
 
 		std::unique_ptr<Camera> m_Camera;
 		std::unique_ptr<Camera> m_InitialCamera;

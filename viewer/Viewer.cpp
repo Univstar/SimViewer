@@ -23,7 +23,7 @@ namespace Pivot {
 		Renderer::SetBlended(true);
 	}
 
-	Viewer::Viewer(std::filesystem::path const &dirname) : Viewer() {
+	Viewer::Viewer(std::filesystem::path const &dirname, bool cliExport, float fps) : Viewer() {
 		if (!LoadDirectory(dirname)) {
 			spdlog::critical("Failed to create Viewer without a valid directory");
 			std::exit(EXIT_FAILURE);
@@ -42,7 +42,11 @@ namespace Pivot {
 		m_AnimationExporter.SetDefaultFilename(m_Dirname / "export" / "animation.mp4");
 		auto &exportAnimation = m_AnimationExporter.GetState();
 		exportAnimation.EndFrame = static_cast<int>(m_FrameCount - 1);
-		exportAnimation.FrameRate = m_Animation.FrameRate;
+		exportAnimation.FrameRate = (cliExport && fps > 0.f) ? fps : m_Animation.FrameRate;
+
+		if (cliExport) {
+			StartCliExport(fps);
+		}
 	}
 
 	Viewer::~Viewer() {
@@ -51,7 +55,30 @@ namespace Pivot {
 		ViewShaderPool::DestroyShaders();
 	}
 
+	void Viewer::StartCliExport(float fps) {
+		m_CliExport = true;
+		auto &state = m_AnimationExporter.GetState();
+		state.StartFrame = 0;
+		state.EndFrame = static_cast<int>(m_FrameCount - 1);
+		state.FrameRate = fps;
+		state.FilenameStr = (m_Dirname / "export" / "animation.mp4").string();
+		m_AnimationExporter.Start(m_FrameCount);
+	}
+
+	bool Viewer::IsCliExportDone() const {
+		return m_CliExport && m_CliExportDone;
+	}
+
 	void Viewer::Tick(float deltaTime) {
+		if (m_CliExport) {
+			if (!m_AnimationExporter.IsExporting() && m_CliExportDone) {
+				App::Get()->GetWindow()->Close();
+				return;
+			}
+			// Auto-play animation during CLI export
+			m_Animation.Playing = true;
+			m_Animation.FrameRate = m_AnimationExporter.GetState().FrameRate;
+		}
 		UpdateCurrentFrame(deltaTime);
 		UploadCurrentFrame();
 		RenderScene();
@@ -59,6 +86,14 @@ namespace Pivot {
 			m_AnimationExporter.Step([this](std::filesystem::path const &filename) {
 				return SaveFrameImage(filename);
 			});
+			if (!m_AnimationExporter.IsExporting() && m_CliExport) {
+				// Export finished (success or failure)
+				m_CliExportDone = true;
+				if (m_AnimationExporter.GetState().Failed) {
+					spdlog::error("CLI export failed: {}", m_AnimationExporter.GetState().Status);
+					App::Get()->GetWindow()->Close();
+				}
+			}
 		}
 	}
 
@@ -135,18 +170,24 @@ namespace Pivot {
 		spdlog::flush_on(spdlog::level::trace);
 
 		std::string dirname;
+		bool exportMp4 = false;
+		float fps = 25.f;
 
 		try {
 			cxxopts::Options argParser("viewer", "The Pivot viewer of animations for research in computer graphics");
 			argParser.add_options()
-				("n,dirname", "Directory name", cxxopts::value<std::string>()->default_value("output"))
-				("h,help",    "Print usage");
+				("n,dirname",   "Directory name", cxxopts::value<std::string>()->default_value("output"))
+				("export-mp4",  "Export all frames to MP4 and exit")
+				("fps",        "Frame rate for MP4 export (default: 25)", cxxopts::value<float>()->default_value("25"))
+				("h,help",     "Print usage");
 			auto result = argParser.parse(static_cast<int>(args.size()), args.data());
 			if (result.count("help")) {
 				std::cout << argParser.help() << std::endl;
 				std::exit(EXIT_SUCCESS);
 			}
-			dirname = result["dirname"].as<std::string>();
+			dirname   = result["dirname"].as<std::string>();
+			exportMp4 = result.count("export-mp4") > 0;
+			fps       = result["fps"].as<float>();
 		} catch (cxxopts::exceptions::exception const &e) {
 			spdlog::critical("Failed to parse command line: {}", e.what());
 			std::exit(EXIT_FAILURE);
@@ -164,6 +205,6 @@ namespace Pivot {
 			},
 		};
 
-		return CreateApp<Viewer>(options, dirname);
+		return CreateApp<Viewer>(options, dirname, exportMp4, fps);
 	}
 }
