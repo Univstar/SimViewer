@@ -5,7 +5,7 @@ add_rules("mode.debug", "mode.release")
 
 add_requires("cxxopts v3.1.1")
 add_requires("eigen")
-add_requires("glad")
+add_requires("glad v0.1.36")
 add_requires("glfw")
 add_requires("glm")
 add_requires("imgui v1.89.6", { configs = { glfw_opengl3 = true } })
