@@ -31,6 +31,10 @@ target("assets")
 
 target("viewer")
     set_kind("binary")
+    if not is_plat("windows") then
+        -- GCC rejects members named after their own type (App.h); MSVC accepts it.
+        add_cxxflags("-fpermissive")
+    end
     add_deps("assets")
     add_packages("cxxopts")
     add_packages("eigen")

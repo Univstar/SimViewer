@@ -107,7 +107,7 @@ namespace Pivot {
 		auto const inputPattern = m_State.TempDir / "frame_%06d.png";
 		auto const ffmpegLog = (m_State.Filename.parent_path() / "ffmpeg.log").string();
 		auto const command = fmt::format(
-			"{} -y -framerate {} -i {} -vf scale=trunc(iw/2)*2:trunc(ih/2)*2 -c:v libx264 -pix_fmt yuv420p {} 2>{}",
+			"{} -y -framerate {} -i {} -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" -c:v libx264 -pix_fmt yuv420p {} 2>{}",
 			QuoteCommandExecutable(ffmpeg),
 			m_State.FrameRate,
 			QuoteCommandArg(inputPattern),
@@ -146,6 +146,7 @@ namespace Pivot {
 	}
 
 	std::filesystem::path AnimationExporter::FindFfmpegExecutable() const {
+#ifdef _WIN32
 		auto const local = std::filesystem::current_path() / "ffmpeg.exe";
 		if (std::filesystem::exists(local)) {
 			return local;
@@ -153,6 +154,15 @@ namespace Pivot {
 		if (std::system("where ffmpeg >nul 2>&1") == 0) {
 			return "ffmpeg";
 		}
+#else
+		auto const local = std::filesystem::current_path() / "ffmpeg";
+		if (std::filesystem::exists(local)) {
+			return local;
+		}
+		if (std::system("command -v ffmpeg >/dev/null 2>&1") == 0) {
+			return "ffmpeg";
+		}
+#endif
 		return { };
 	}
 

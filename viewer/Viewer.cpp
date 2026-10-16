@@ -83,6 +83,11 @@ namespace Pivot {
 		UploadCurrentFrame();
 		RenderScene();
 		if (m_AnimationExporter.IsExporting()) {
+			// Frames are loaded asynchronously; do not save a frame before its data is available,
+			// otherwise the clamped (stale) frame would be exported.
+			if (m_AnimationExporter.GetFrameToRender() >= m_AvailFrameCount) {
+				return;
+			}
 			m_AnimationExporter.Step([this](std::filesystem::path const &filename) {
 				return SaveFrameImage(filename);
 			});
@@ -172,6 +177,7 @@ namespace Pivot {
 		std::string dirname;
 		bool exportMp4 = false;
 		float fps = 25.f;
+		std::uint32_t width = 800, height = 600;
 
 		try {
 			cxxopts::Options argParser("viewer", "The Pivot viewer of animations for research in computer graphics");
@@ -179,6 +185,8 @@ namespace Pivot {
 				("n,dirname",   "Directory name", cxxopts::value<std::string>()->default_value("output"))
 				("export-mp4",  "Export all frames to MP4 and exit")
 				("fps",        "Frame rate for MP4 export (default: 25)", cxxopts::value<float>()->default_value("25"))
+				("width",      "Window width in pixels", cxxopts::value<std::uint32_t>()->default_value("800"))
+				("height",     "Window height in pixels", cxxopts::value<std::uint32_t>()->default_value("600"))
 				("h,help",     "Print usage");
 			auto result = argParser.parse(static_cast<int>(args.size()), args.data());
 			if (result.count("help")) {
@@ -188,6 +196,8 @@ namespace Pivot {
 			dirname   = result["dirname"].as<std::string>();
 			exportMp4 = result.count("export-mp4") > 0;
 			fps       = result["fps"].as<float>();
+			width     = result["width"].as<std::uint32_t>();
+			height    = result["height"].as<std::uint32_t>();
 		} catch (cxxopts::exceptions::exception const &e) {
 			spdlog::critical("Failed to parse command line: {}", e.what());
 			std::exit(EXIT_FAILURE);
@@ -196,6 +206,8 @@ namespace Pivot {
 		AppCreateOptions options = {
 			.WindowCreateOptions = {
 				.Title = "Pivot Viewer",
+				.Width = width,
+				.Height = height,
 				.MultisampleCount = 8,
 				.MinWidth  = 320,
 				.MinHeight = 240,
