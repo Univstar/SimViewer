@@ -25,6 +25,7 @@ namespace Pivot {
 			"heatmap (points)",
 			"heatmap (triangles)",
 			"fracmap",
+			"foam (triangles)",
 		});
 
 		static inline std::array<std::unique_ptr<Shader>, static_cast<std::size_t>(ViewShader::Count)> s_Shaders;
@@ -42,6 +43,7 @@ namespace Pivot {
 			{ "heatmap_3d_triangles", ViewShader::Heatmap3D_Triangles },
 			{ "fracmap_2d_triangles", ViewShader::Fracmap2D },
 			{ "fracmap_2d_lines"    , ViewShader::Fracmap2D },
+			{ "foam_3d_triangles"   , ViewShader::Foam3D_Triangles },
 		};
 	};
 }

@@ -23,7 +23,9 @@ namespace Pivot {
 			m_Camera = std::make_unique<OrthoCamera>(glm::vec2(0), radius * 2);
 			m_InitialCamera = std::make_unique<OrthoCamera>(*reinterpret_cast<OrthoCamera *>(m_Camera.get()));
 		} else {
-			m_Camera = std::make_unique<OrbitCamera>(glm::vec3(0), radius);
+			auto camera = std::make_unique<OrbitCamera>(glm::vec3(0), radius);
+			camera->EnableAutoClipping(radius);
+			m_Camera = std::move(camera);
 			m_InitialCamera = std::make_unique<OrbitCamera>(*reinterpret_cast<OrbitCamera *>(m_Camera.get()));
 		}
 

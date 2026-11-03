@@ -173,6 +173,7 @@ namespace Pivot {
 				break;
 			}
 			case ViewShader::Default3D_Triangles:
+			case ViewShader::Foam3D_Triangles:
 			case ViewShader::Default3D_Points: {
 				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
 				ImGui::SliderFloat("Metallic", &curMat.Metallic, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);

@@ -59,6 +59,13 @@ namespace Pivot {
 			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
 			s_Shaders[static_cast<std::size_t>(ViewShader::Heatmap3D_Triangles)] = std::move(shader);
 		}
+		{ // Foam uses the scalar Heat vertex stream, with a fixed coverage range.
+			auto vs = Renderer::CreateShaderModule("assets/shaders/heatmap_3d_triangles.vert");
+			auto gs = Renderer::CreateShaderModule("assets/shaders/heatmap_3d_triangles.geom");
+			auto fs = Renderer::CreateShaderModule("assets/shaders/foam_3d_triangles.frag");
+			auto shader = Renderer::CreateShader({ vs.get(), gs.get(), fs.get() });
+			s_Shaders[static_cast<std::size_t>(ViewShader::Foam3D_Triangles)] = std::move(shader);
+		}
 		{ // Fracmap 2D shader
 			auto vs = Renderer::CreateShaderModule("assets/shaders/fracmap_2d.vert");
 			auto fs = Renderer::CreateShaderModule("assets/shaders/fracmap_2d.frag");

@@ -36,6 +36,11 @@ Files and directories have the following meaning:
 | `Radius` | float | no | `1.0` | Initial camera scale in 2D or orbit radius in 3D. |
 | `Objects` | sequence | yes | none | Ordered list of object declarations. |
 
+In 3D, the viewer also uses `Radius` as the scene scale for automatic near/far
+clipping. The clip planes follow camera zoom, rotation, and panning; large
+datasets are not limited to a fixed 100-unit far plane. Camera reset restores
+the initial clipping configuration as well as the view.
+
 ### Example
 
 ```yaml
@@ -58,7 +63,7 @@ Each entry in `Objects` defines one renderable object.
 | --- | --- | --- | --- | --- |
 | `Name` | string | yes | none | Object identifier. The viewer loads `results/<frame>/<Name>.out`. |
 | `Primitive` | string | no | `Triangles` | One of `Points`, `Lines`, or `Triangles`. |
-| `Shader` | string | no | `default` | Shader family. Public values are `default`, `heatmap`, and `fracmap`. |
+| `Shader` | string | no | `default` | Shader family. Public values are `default`, `heatmap`, `fracmap`, and `foam`. |
 | `Indexed` | bool | no | `false` | Whether the binary payload contains an index buffer. |
 | `Animated` | bool | no | `false` | Whether the viewer loads additional frames beyond frame `0`. |
 | `TopoFixed` | bool | no | `false` | Whether topology payloads are stored only in the initial frame. |
@@ -84,15 +89,27 @@ Supported public shader families are:
 - `default`
 - `heatmap`
 - `fracmap`
+- `foam` (3D indexed triangles, fixed 0–1 surface coverage)
 
 The resulting attribute set is inferred automatically:
 
 - positions are always present
 - normals are present in 3D
-- heat scalars are present for `heatmap` and `fracmap`
+- heat scalars are present for `heatmap`, `fracmap`, and `foam`
 - radii are associated with point primitives
 
 Texture coordinates exist in internal viewer data structures but are not part of the documented public dataset contract.
+
+For `foam`, Heat is a coverage fraction with a fixed range of `[0, 1]`, independent
+of the extrema in loaded frames. It blends `Material.Albedo` with white foam and
+increases roughness; `HeatDiv` has no effect. Use zero coverage for bottom and
+side vertices of a closed water mesh.
+
+PLY model export writes the original Heat stream as `property float heat`, without
+normalization or color conversion. Blender 4.1+ imports it as a Point-domain Float
+attribute named `heat` with **Import Attributes** enabled. Disable **Merge Vertices**
+when coincident vertices carry different coverage. An Attribute shader node named
+`heat` exposes the scalar through its Fac output.
 
 ## Binary Encoding
 
@@ -115,7 +132,7 @@ The viewer then reads attribute arrays in this order:
 
 1. positions
 2. normals, when `Dimension == 3`
-3. heat values, when `Shader` is `heatmap` or `fracmap`
+3. heat values, when `Shader` is `heatmap`, `fracmap`, or `foam`
 4. texture coordinates, only for internal formats not covered by this public specification
 5. radii, for point primitives
 6. `index_count`, when `Indexed == true`

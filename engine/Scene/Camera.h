@@ -104,6 +104,12 @@ namespace Pivot {
 
 		virtual void SetAs(Camera const &rhs) override { *this = *reinterpret_cast<OrbitCamera const *>(&rhs); }
 
+		void EnableAutoClipping(float sceneScale) {
+			m_ClipCenter = m_Center;
+			m_ClipScale = std::max(sceneScale, 1e-4f);
+			UpdateClipping();
+		}
+
 		virtual void Rotate(float dx, float dy) override {
 			m_Phi   -= glm::radians(90.f) * dx;
 			m_Theta -= glm::radians(90.f) * dy;
@@ -111,6 +117,7 @@ namespace Pivot {
 			m_Phi = std::fmod(m_Phi, glm::radians(360.f));
 			if (m_Phi < 0) m_Phi += glm::radians(360.f);
 			m_Eye = m_Center + Coordinates::SphericalToCartesian(m_Rad, m_Theta, m_Phi);
+			UpdateClipping();
 		}
 
 		virtual void Translate(float dx, float dy) override {
@@ -119,12 +126,14 @@ namespace Pivot {
 			glm::vec3 const up    = glm::normalize(glm::cross(right, front));
 			m_Center += (up * dy - right * dx) * m_Rad * 2.f * std::tan(m_Fovy * .5f);
 			m_Eye = m_Center + Coordinates::SphericalToCartesian(m_Rad, m_Theta, m_Phi);
+			UpdateClipping();
 		}
 
 		virtual void Scale(float delta) override {
 			m_Rad *= std::exp(-.05f * delta);
 			m_Rad = std::clamp(m_Rad, 1e-4f, 1e+4f);
 			m_Eye = m_Center + Coordinates::SphericalToCartesian(m_Rad, m_Theta, m_Phi);
+			UpdateClipping();
 		}
 
 		auto GetRad()   const { return m_Rad; }
@@ -132,8 +141,18 @@ namespace Pivot {
 		auto GetPhi()   const { return m_Phi; }
 	
 	private:
+		void UpdateClipping() {
+			if (m_ClipScale <= 0.f) return;
+			// Keep near detail when zooming in, and cover the original scene
+			// even after the orbit target has been panned away from its center.
+			m_ZNear = std::max(1e-6f, .001f * std::min(m_Rad, m_ClipScale));
+			m_ZFar = glm::length(m_Eye - m_ClipCenter) + 2.f * m_ClipScale;
+		}
+
 		float m_Rad;
 		float m_Theta;
 		float m_Phi;
+		glm::vec3 m_ClipCenter { 0.f };
+		float m_ClipScale = 0.f;
 	};
 }

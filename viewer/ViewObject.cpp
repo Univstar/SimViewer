@@ -94,7 +94,7 @@ namespace Pivot {
 			m_AttribFlags |= AttribFlagBits::Heat;
 			SetValue(m_Material.HeatDiv, node["HeatDiv"]);
 		}
-		if (shaderName == "fracmap") {
+		if (shaderName == "fracmap" || shaderName == "foam") {
 			m_AttribFlags |= AttribFlagBits::Heat;
 		}
 		if (primitive == PrimitiveType::Points) {
@@ -158,9 +158,11 @@ namespace Pivot {
 			frameData.Heats.resize(vtxCount * sizeof(float));
 			IO::Read(fin, frameData.Heats);
 			std::span<float const> heats(reinterpret_cast<float const *>(frameData.Heats.data()), vtxCount);
-			auto const [itMin, itMax] = std::minmax_element(heats.begin(), heats.end());
-			m_Material.HeatMin = std::min(m_Material.HeatMin, *itMin);
-			m_Material.HeatMax = std::max(m_Material.HeatMax, *itMax);
+			if (!heats.empty()) {
+				auto const [itMin, itMax] = std::minmax_element(heats.begin(), heats.end());
+				m_Material.HeatMin = std::min(m_Material.HeatMin, *itMin);
+				m_Material.HeatMax = std::max(m_Material.HeatMax, *itMax);
+			}
 		}
 		if ((!m_TopoFixed || initial) && (m_AttribFlags & AttribFlagBits::TexCoord)) {
 			frameData.TexCoords.resize(vtxCount * sizeof(float) * 2);
@@ -232,6 +234,7 @@ namespace Pivot {
 			shader->SetUniform("u_RadScale", m_Material.RadScale);
 			break;
 		case ViewShader::Default3D_Triangles:
+		case ViewShader::Foam3D_Triangles:
 		case ViewShader::Default3D_Points:
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
@@ -303,6 +306,12 @@ namespace Pivot {
 		plyFile.add_properties_to_element(
 			"vertex", { "nx", "ny", "nz" }, tinyply::Type::FLOAT32, m_FramesData[posFrame].Normals.size() / m_VecSizeBytes,
 			reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(m_FramesData[posFrame].Normals.data())), tinyply::Type::INVALID, 0);
+		if (!m_FramesData[posFrame].Heats.empty()) {
+			// Blender 4.1+ imports custom scalar properties as Point/Float attributes.
+			plyFile.add_properties_to_element(
+				"vertex", { "heat" }, tinyply::Type::FLOAT32, m_FramesData[posFrame].Heats.size() / sizeof(float),
+				reinterpret_cast<std::uint8_t *>(const_cast<std::byte *>(m_FramesData[posFrame].Heats.data())), tinyply::Type::INVALID, 0);
+		}
 		plyFile.add_properties_to_element(
 			"face", { "vertex_indices" }, tinyply::Type::UINT32, m_FramesData[topoFrame].Indices.size() / 3,
 			reinterpret_cast<std::uint8_t *>(const_cast<std::uint32_t *>(m_FramesData[topoFrame].Indices.data())), tinyply::Type::UINT8, 3);
