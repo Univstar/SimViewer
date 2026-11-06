@@ -178,6 +178,13 @@ namespace Pivot {
 				ImGui::ColorEdit4("Albedo", glm::value_ptr(curMat.Albedo));
 				ImGui::SliderFloat("Metallic", &curMat.Metallic, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
 				ImGui::SliderFloat("Roughness", &curMat.Roughness, 0.f, 1.f, "%.3f", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoRoundToFormat);
+				if (curObj->GetViewShader() == ViewShader::Foam3D_Triangles) {
+					ImGui::SeparatorText("Foam display range");
+					ImGui::SliderFloat("Minimum", &curMat.FoamMin, 0.f, curMat.FoamMax-1e-4f, "%.4f", ImGuiSliderFlags_AlwaysClamp);
+					ImGui::SliderFloat("Maximum", &curMat.FoamMax, curMat.FoamMin+1e-4f, 1.f, "%.4f", ImGuiSliderFlags_AlwaysClamp);
+					if (ImGui::Button("Reset range")) { curMat.FoamMin=0.f; curMat.FoamMax=1.f; }
+					ImGui::TextDisabled("Display only; exported Heat is unchanged.");
+				}
 				break;
 			}
 			case ViewShader::Heatmap2D: {

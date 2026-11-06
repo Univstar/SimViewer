@@ -48,6 +48,8 @@ namespace Pivot {
 		bool      HeatDiv   = false; // whether the heatmap is diverging (true) or sequential (false)
 		float     HeatMin   = +std::numeric_limits<float>::infinity();
 		float     HeatMax   = -std::numeric_limits<float>::infinity();
+		float     FoamMin   = 0.f; // display range, independent of scanned data extrema
+		float     FoamMax   = 1.f;
 
 		float     RadScale  = .8;
 

@@ -239,6 +239,10 @@ namespace Pivot {
 			shader->SetUniform("u_Albedo", m_Material.Albedo);
 			shader->SetUniform("u_Metallic", m_Material.Metallic);
 			shader->SetUniform("u_Roughness", m_Material.Roughness);
+			if (m_ViewShader == ViewShader::Foam3D_Triangles) {
+				shader->SetUniform("u_FoamMin", m_Material.FoamMin);
+				shader->SetUniform("u_FoamMax", m_Material.FoamMax);
+			}
 			break;
 		case ViewShader::Heatmap2D:
 			if (m_Material.HeatDiv) {

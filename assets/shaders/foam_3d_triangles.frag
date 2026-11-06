@@ -19,6 +19,8 @@ layout(std140) uniform PassConstants {
 uniform vec4  u_Albedo;
 uniform float u_Metallic;
 uniform float u_Roughness;
+uniform float u_FoamMin;
+uniform float u_FoamMax;
 
 const float PI = 3.14159265359;
 
@@ -82,7 +84,7 @@ void main() {
 	vec3  viewDir   = normalize(u_CameraPosition - g_Position);
 	if (dot(normal, viewDir) < 0) normal = -normal;
 	// Maybe sample textures in the future
-	float foam = clamp(g_Heat, 0.0, 1.0);
+	float foam = clamp((g_Heat-u_FoamMin)/max(u_FoamMax-u_FoamMin, 0.0001), 0.0, 1.0);
 	vec3 albedo = mix(vec3(u_Albedo), vec3(0.92, 0.95, 0.96), foam);
 	float metallic = mix(u_Metallic, 0.0, foam);
 	float roughness = mix(max(u_Roughness, 0.04), 0.85, foam);

@@ -89,7 +89,7 @@ Supported public shader families are:
 - `default`
 - `heatmap`
 - `fracmap`
-- `foam` (3D indexed triangles, fixed 0–1 surface coverage)
+- `foam` (3D indexed triangles, 0–1 surface coverage with adjustable display range)
 
 The resulting attribute set is inferred automatically:
 
@@ -101,9 +101,12 @@ The resulting attribute set is inferred automatically:
 Texture coordinates exist in internal viewer data structures but are not part of the documented public dataset contract.
 
 For `foam`, Heat is a coverage fraction with a fixed range of `[0, 1]`, independent
-of the extrema in loaded frames. It blends `Material.Albedo` with white foam and
-increases roughness; `HeatDiv` has no effect. Use zero coverage for bottom and
-side vertices of a closed water mesh.
+of the extrema in loaded frames. The material panel's **Foam display range**
+Minimum/Maximum sliders map Heat to `clamp((heat-min)/(max-min), 0, 1)` for shading.
+Defaults are 0/1; Reset range restores them. The display range persists across
+frame changes and never modifies raw Heat or PLY export. It blends
+`Material.Albedo` with white foam and increases roughness; `HeatDiv` has no effect.
+Use zero coverage for bottom and side vertices of a closed water mesh.
 
 PLY model export writes the original Heat stream as `property float heat`, without
 normalization or color conversion. Blender 4.1+ imports it as a Point-domain Float
